@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "berry": {
+      "type": "stdio",
+      "command": "berry",
+      "args": ["mcp"]
+    }
+  }
+}

@@ -2,3 +2,5 @@
 .envrc-aliases/
 
 .claude/settings.local.json
+
+node_modules/

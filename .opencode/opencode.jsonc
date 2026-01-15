@@ -5,6 +5,9 @@
     "staff-mentor": {
       "prompt": "{file:../personas/senior-to-staff-developer.md}",
     },
+    "review-professional": {
+      "prompt": "{file:../personas/tech-review-professional.md}",
+    },
   },
   "lsp": {
     "markdown": {

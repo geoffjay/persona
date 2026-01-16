@@ -71,7 +71,7 @@ claude --system-prompt-file ./.claude/personas/staff-trajectory-mentor.md
 The personas are used in an `opencode` session using the `--agent` flag:
 
 ```bash
-opencode --agent ./.claude/personas/staff-trajectory-mentor.md
+opencode --agent staff-mentor
 ```
 
 ### Memory Operations

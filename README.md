@@ -19,7 +19,9 @@ decisions, assignments, and follow-ups.
 
 ## Prerequisites
 
-- [Claude Code CLI](https://github.com/anthropics/claude-code)
+- One of the following:
+  - [Claude Code](https://github.com/anthropics/claude-code)
+  - [OpenCode](https://opencode.ai)
 - [Berry](https://github.com/geoffjay/berry) - Memory management with MCP interface
 - [asdf](https://asdf-vm.com/) - Runtime version manager
 - [direnv](https://direnv.net/) - Automatic environment loading
@@ -50,6 +52,8 @@ cp .env.example .env
 
 ### Starting a Mentor Session
 
+#### Claude Code
+
 The project includes a shell alias for quick access:
 
 ```bash
@@ -59,7 +63,15 @@ cc-mentor-staff "What should I focus on for my Staff trajectory?"
 Or explicitly specify the persona:
 
 ```bash
-claude --system-prompt-file ./.claude/personas/senior-to-staff-developer.md
+claude --system-prompt-file ./.claude/personas/staff-trajectory-mentor.md
+```
+
+#### OpenCode
+
+The personas are used in an `opencode` session using the `--agent` flag:
+
+```bash
+opencode --agent ./.claude/personas/staff-trajectory-mentor.md
 ```
 
 ### Memory Operations
@@ -85,37 +97,19 @@ berry forget <memory-id>
 
 ### Session Workflow
 
-1. **Start**: Launch a session with `cc-mentor-staff`
+1. **Start**: Launch a session with `cc-mentor-staff` or `opencode --agent`
 2. **Context Load**: The session hook automatically searches for prior assignments and context
 3. **Accountability**: If pending assignments exist, the mentor asks for status before proceeding
 4. **Work**: Engage in context-aware discussion
 5. **Persist**: Key decisions, new assignments, and questions are stored in Berry
 
-## Project Structure
-
-```
-.
-├── .claude/
-│   ├── commands/          # Custom Claude Code commands
-│   │   └── create-persona.md
-│   ├── hooks/             # Session lifecycle hooks
-│   │   └── mentor-session-start.sh
-│   ├── personas/          # AI persona system prompts
-│   │   └── senior-to-staff-developer.md
-│   └── settings.json      # Hook registration
-├── .mcp.json              # MCP server configuration (Berry)
-├── .opencode/             # OpenCode IDE configuration
-├── .envrc                 # direnv configuration
-├── .tool-versions         # asdf runtime versions
-├── Procfile               # Process definitions
-└── conversations/         # Session logs
-```
-
 ## Configuration
 
-### Berry MCP (`.mcp.json`)
+### Berry MCP
 
-Configures the Berry memory server for Claude Code integration:
+#### Claude Code (`.mcp.json`)
+
+Configure the Berry memory server for Claude Code integration:
 
 ```json
 {
@@ -123,6 +117,22 @@ Configures the Berry memory server for Claude Code integration:
     "berry": {
       "command": "berry",
       "args": ["mcp"]
+    }
+  }
+}
+```
+
+#### OpenCode (`.opencode/opencode.jsonc`)
+
+Configure the Berry memory server for OpenCode integration:
+
+```json
+{
+  "mcp": {
+    "berry": {
+      "type": "local",
+      "command": ["berry", "mcp"],
+      "enabled": true
     }
   }
 }

@@ -1,3 +1,7 @@
+---
+persona_id: tech-review-professional
+---
+
 # Tech Review Professional
 
 ## Core Identity

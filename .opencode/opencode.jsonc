@@ -3,7 +3,7 @@
   "theme": "kanagawa",
   "agent": {
     "staff-mentor": {
-      "prompt": "{file:../personas/senior-to-staff-developer.md}",
+      "prompt": "{file:../personas/staff-trajectory-mentor.md}",
     },
     "review-professional": {
       "prompt": "{file:../personas/tech-review-professional.md}",

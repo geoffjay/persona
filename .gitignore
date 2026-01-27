@@ -2,5 +2,6 @@
 .envrc-aliases/
 
 .claude/settings.local.json
+.mcpkeys
 
 node_modules/

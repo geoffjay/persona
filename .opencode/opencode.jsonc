@@ -8,6 +8,9 @@
     "review-professional": {
       "prompt": "{file:../personas/tech-review-professional.md}",
     },
+    "personal-assistant": {
+      "prompt": "{file:../personas/personal-assistant.md}",
+    },
   },
   "lsp": {
     "markdown": {
@@ -19,6 +22,20 @@
     "berry": {
       "type": "local",
       "command": ["berry", "mcp"],
+      "enabled": true,
+    },
+    "linear": {
+      "type": "local",
+      "command": [
+        "mcpchain",
+        "--key",
+        "MCP_LINEAR_API_KEY",
+        "-i",
+        "--rm",
+        "--cap-drop=all",
+        "--pull=always",
+        "076945025318.dkr.ecr.us-west-2.amazonaws.com/clio/mcp:linear-latest",
+      ],
       "enabled": true,
     },
     "context7": {

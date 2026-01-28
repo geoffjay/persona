@@ -1,6 +1,30 @@
 #!/bin/bash
+
 # Mentor Session Protocol Hook
 # Injects Berry memory context and protocol for mentor persona sessions
+#
+# Activates when ANY of these conditions are met:
+#   1. claude --agent mentor
+#   2. CLAUDE_PERSONA=mentor claude ...
+#
+# Example alias:
+#   alias claude-mentor='CLAUDE_PERSONA=mentor claude --system-prompt-file ~/path/to/mentor.md'
+
+# Read JSON input from stdin
+input=$(cat)
+
+# Extract agent_type (requires jq)
+agent_type=$(echo "$input" | jq -r '.agent_type // empty' 2>/dev/null)
+
+# Check if this is a mentor session via agent_type OR environment variable
+is_mentor=false
+if [ "$agent_type" = "mentor" ] || [ "$CLAUDE_PERSONA" = "mentor" ]; then
+    is_mentor=true
+fi
+
+if [ "$is_mentor" = "false" ]; then
+    exit 0
+fi
 
 cat << 'EOF'
 [MENTOR SESSION PROTOCOL]

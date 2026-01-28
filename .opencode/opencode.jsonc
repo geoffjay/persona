@@ -11,6 +11,9 @@
     "personal-assistant": {
       "prompt": "{file:../personas/personal-assistant.md}",
     },
+    "systems-designer": {
+      "prompt": "{file:../personas/systems-designer.md}",
+    },
   },
   "lsp": {
     "markdown": {

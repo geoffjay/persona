@@ -5,3 +5,9 @@
 .mcpkeys
 
 node_modules/
+
+conversations/tech-review-professional
+conversations/systems-design
+
+# UI
+target

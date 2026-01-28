@@ -20,6 +20,7 @@ command. In order to execute this command you will need to request the following
 The review command will use these settings internally as:
 
 - github username: `{REPLACE_WITH_USERNAME}` or `{GITHUB_USERNAME}`
+- github organization: `{REPLACE_WITH_ORG}` or `{GITHUB_ORG}`
 - linear email: `{REPLACE_WITH_EMAIL}` or `{LINEAR_EMAIL}`
 - target role: `{Manager OR IC}` or `{TARGET_ROLE}`
 

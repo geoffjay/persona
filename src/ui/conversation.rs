@@ -57,9 +57,15 @@ impl ConversationView {
         self.pty_master = Some(master.clone());
 
         // Build the command to start opencode with the persona
+        // Pass the persona ID which matches the agent name in opencode's config
         let mut cmd = CommandBuilder::new("opencode");
         cmd.arg("--agent");
-        cmd.arg(persona.file_path.to_string_lossy().as_ref());
+        cmd.arg(&persona.id);
+
+        // Set the working directory to the project root where .opencode/opencode.jsonc lives
+        if let Ok(cwd) = std::env::current_dir() {
+            cmd.cwd(cwd);
+        }
 
         // Spawn the command in the PTY
         pair.slave.spawn_command(cmd)?;

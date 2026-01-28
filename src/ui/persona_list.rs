@@ -67,12 +67,14 @@ impl Render for PersonaList {
         v_flex()
             .id("persona-list")
             .h_full()
-            .w(px(200.))
+            .w(px(300.))
+            .items_start()
             .border_r_1()
             .border_color(cx.theme().border)
             .bg(cx.theme().sidebar)
             .child(
                 div()
+                    .w_full()
                     .px_3()
                     .py_2()
                     .border_b_1()
@@ -81,6 +83,7 @@ impl Render for PersonaList {
             )
             .child(
                 div()
+                    .w_full()
                     .flex_1()
                     .overflow_hidden()
                     .children(

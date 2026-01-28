@@ -4,6 +4,7 @@ use std::path::PathBuf;
 #[derive(Debug, Clone)]
 pub struct AppConfig {
     pub personas_dir: PathBuf,
+    pub berry_server_url: String,
 }
 
 impl Default for AppConfig {
@@ -13,13 +14,24 @@ impl Default for AppConfig {
             .map(|p| p.join("persona-ui").join("personas"))
             .unwrap_or_else(|| PathBuf::from("personas"));
 
-        Self { personas_dir }
+        let berry_server_url = std::env::var("BERRY_SERVER_URL")
+            .unwrap_or_else(|_| "http://localhost:4114".to_string());
+
+        Self {
+            personas_dir,
+            berry_server_url,
+        }
     }
 }
 
 impl AppConfig {
     pub fn with_personas_dir(mut self, dir: PathBuf) -> Self {
         self.personas_dir = dir;
+        self
+    }
+
+    pub fn with_berry_server_url(mut self, url: String) -> Self {
+        self.berry_server_url = url;
         self
     }
 

@@ -1,9 +1,9 @@
 use crate::config::AppConfig;
 use crate::persona::Persona;
 use crate::state::{AppState, NavigationView};
-use crate::ui::{ConversationTabs, ConversationView, NavigationBar, PersonaList, SettingsView};
+use crate::ui::{ConversationTabs, ConversationView, MemoryView, NavigationBar, PersonaList, SettingsView};
 use gpui::*;
-use gpui_component::{h_flex, label::Label, v_flex, ActiveTheme};
+use gpui_component::{h_flex, v_flex, ActiveTheme};
 use std::collections::HashMap;
 
 pub struct App {
@@ -13,6 +13,7 @@ pub struct App {
     tabs: Entity<ConversationTabs>,
     conversations: HashMap<String, Entity<ConversationView>>,
     settings_view: Entity<SettingsView>,
+    memory_view: Entity<MemoryView>,
 }
 
 impl App {
@@ -64,6 +65,8 @@ impl App {
 
         let settings_view = cx.new(|cx| SettingsView::new(_window, cx));
 
+        let memory_view = cx.new(|cx| MemoryView::new(config.berry_server_url.clone(), _window, cx));
+
         Self {
             state,
             nav_bar,
@@ -71,6 +74,7 @@ impl App {
             tabs,
             conversations: HashMap::new(),
             settings_view,
+            memory_view,
         }
     }
 
@@ -115,7 +119,7 @@ impl App {
     fn render_main_content(&self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         match self.state.current_view {
             NavigationView::Personas => self.render_personas_view(cx),
-            NavigationView::Memory => self.render_placeholder_view("Memory View", cx),
+            NavigationView::Memory => self.memory_view.clone().into_any_element(),
             NavigationView::Settings => self.settings_view.clone().into_any_element(),
         }
     }
@@ -156,26 +160,6 @@ impl App {
             .justify_center()
             .text_color(cx.theme().muted_foreground)
             .child("Select a persona to start a conversation")
-            .into_any_element()
-    }
-
-    fn render_placeholder_view(&self, title: impl Into<SharedString>, cx: &mut Context<Self>) -> AnyElement {
-        div()
-            .flex_1()
-            .size_full()
-            .flex()
-            .items_center()
-            .justify_center()
-            .child(
-                v_flex()
-                    .gap_2()
-                    .items_center()
-                    .child(Label::new(title).text_xl())
-                    .child(
-                        Label::new("Coming soon...")
-                            .text_color(cx.theme().muted_foreground),
-                    ),
-            )
             .into_any_element()
     }
 }

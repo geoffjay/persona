@@ -1,5 +1,6 @@
 mod app;
 mod config;
+mod memory;
 mod persona;
 mod state;
 mod terminal;
@@ -14,6 +15,7 @@ use std::path::PathBuf;
 fn main() {
     let app = Application::new().with_assets(gpui_component_assets::Assets);
     app.run(move |cx| {
+        gpui_tokio_bridge::init(cx);
         gpui_component::init(cx);
 
         // Configure personas directory

@@ -1,5 +1,5 @@
+use crate::config::AppConfig;
 use crate::persona::Persona;
-use crate::terminal::AppTerminalConfig;
 use anyhow::Result;
 use gpui::*;
 use gpui_component::ActiveTheme;
@@ -70,9 +70,9 @@ impl ConversationView {
         // Spawn the command in the PTY
         pair.slave.spawn_command(cmd)?;
 
-        // Load terminal configuration (with Tokyo Night dark as default)
-        let terminal_config = AppTerminalConfig::load();
-        let config = terminal_config.to_terminal_config(initial_cols as usize, initial_rows as usize);
+        // Load terminal configuration from unified app config
+        let app_config = AppConfig::load();
+        let config = app_config.terminal.to_terminal_config(initial_cols as usize, initial_rows as usize);
 
         let terminal = cx.new({
             let pty = master.clone();

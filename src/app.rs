@@ -65,7 +65,7 @@ impl App {
 
         let settings_view = cx.new(|cx| SettingsView::new(_window, cx));
 
-        let memory_view = cx.new(|cx| MemoryView::new(config.berry_server_url.clone(), _window, cx));
+        let memory_view = cx.new(|cx| MemoryView::new(config.berry_server_url().to_string(), _window, cx));
 
         Self {
             state,

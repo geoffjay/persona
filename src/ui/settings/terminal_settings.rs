@@ -1,4 +1,4 @@
-use crate::terminal::AppTerminalConfig;
+use crate::config::{AppConfig, TerminalConfig, TerminalThemeConfig};
 use gpui::*;
 use gpui_component::button::{Button, ButtonVariants};
 use gpui_component::form::{field, v_form};
@@ -7,7 +7,7 @@ use gpui_component::select::{Select, SelectState};
 use gpui_component::{h_flex, label::Label, v_flex, IndexPath};
 
 pub struct TerminalSettingsPanel {
-    config: AppTerminalConfig,
+    config: TerminalConfig,
     font_family_input: Option<Entity<InputState>>,
     font_size_input: Option<Entity<InputState>>,
     scrollback_input: Option<Entity<InputState>>,
@@ -18,8 +18,10 @@ pub struct TerminalSettingsPanel {
 
 impl TerminalSettingsPanel {
     pub fn new() -> Self {
+        // Load terminal config from unified AppConfig
+        let app_config = AppConfig::load();
         Self {
-            config: AppTerminalConfig::load(),
+            config: app_config.terminal,
             font_family_input: None,
             font_size_input: None,
             scrollback_input: None,
@@ -65,15 +67,15 @@ impl TerminalSettingsPanel {
         let themes: Vec<&'static str> = vec!["tokyo-night", "gruvbox", "catppuccin"];
 
         let current_theme_index = match &self.config.theme {
-            crate::terminal::TerminalThemeConfig::Named(name) => {
-                themes.iter().position(|t| *t == name.as_str()).map(IndexPath::new)
-            }
+            TerminalThemeConfig::Named(name) => themes
+                .iter()
+                .position(|t| *t == name.as_str())
+                .map(IndexPath::new),
             _ => None,
         };
 
-        self.theme_select = Some(cx.new(|cx| {
-            SelectState::new(themes, current_theme_index, window, cx)
-        }));
+        self.theme_select =
+            Some(cx.new(|cx| SelectState::new(themes, current_theme_index, window, cx)));
     }
 
     /// Check if any input values differ from the saved config
@@ -116,7 +118,7 @@ impl TerminalSettingsPanel {
         if let Some(ref select) = self.theme_select {
             if let Some(theme) = select.read(cx).selected_value() {
                 let current_theme = match &self.config.theme {
-                    crate::terminal::TerminalThemeConfig::Named(name) => name.as_str(),
+                    TerminalThemeConfig::Named(name) => name.as_str(),
                     _ => "",
                 };
                 if *theme != current_theme {
@@ -171,20 +173,16 @@ impl TerminalSettingsPanel {
         if let Some(ref select) = self.theme_select {
             select.update(cx, |state, _cx| {
                 if let Some(theme) = state.selected_value() {
-                    self.config.theme =
-                        crate::terminal::TerminalThemeConfig::Named(theme.to_string());
+                    self.config.theme = TerminalThemeConfig::Named(theme.to_string());
                 }
             });
         }
 
-        // Save to file
-        if let Some(config_path) = AppTerminalConfig::config_path() {
-            if let Some(parent) = config_path.parent() {
-                let _ = std::fs::create_dir_all(parent);
-            }
-            if let Ok(toml_str) = toml::to_string_pretty(&self.config) {
-                let _ = std::fs::write(&config_path, toml_str);
-            }
+        // Load the full app config, update terminal section, and save
+        let mut app_config = AppConfig::load();
+        app_config.terminal = self.config.clone();
+        if let Err(e) = app_config.save() {
+            eprintln!("Failed to save config: {}", e);
         }
 
         cx.notify();

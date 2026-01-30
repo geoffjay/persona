@@ -1,3 +1,5 @@
+[![Release](https://github.com/geoffjay/persona/actions/workflows/release.yml/badge.svg)](https://github.com/geoffjay/persona/actions/workflows/release.yml)
+
 # Persona
 
 A framework for stateful AI-assisted conversations with persistent memory. Combines Claude Code personas with Berry's

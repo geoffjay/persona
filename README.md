@@ -71,28 +71,6 @@ OpenCode providers. Instructions on doing this are available at [opencode.ai](ht
 typically this only involves executing the command `opencode auth login` and following the prompts for the desired
 provider.
 
-### Session Hook
-
-For Claude Code use this is located at `.claude/hooks/mentor-session-start.sh`, and for OpenCode at
-`.opencode/plugin/mentor-session-start.ts`.
-
-Injects the memory protocol at session start:
-
-- Instructs the agent to search for prior context
-- Defines memory persistence patterns
-- Documents available Berry tools and CLI commands
-
-## Memory Tagging Conventions
-
-Use consistent tags for searchability:
-
-| Tag               | Purpose                              |
-| ----------------- | ------------------------------------ |
-| `mentor`          | All mentor session content           |
-| `staff`           | Staff trajectory related             |
-| `assignment`      | Actionable items with accountability |
-| `session-summary` | End-of-session recaps                |
-
 ## License
 
 MIT

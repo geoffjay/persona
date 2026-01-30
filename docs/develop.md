@@ -93,3 +93,27 @@ Configure the Berry memory server for OpenCode integration:
   }
 }
 ```
+
+## Additional Information
+
+### Session Hook
+
+For Claude Code use this is located at `.claude/hooks/mentor-session-start.sh`, and for OpenCode at
+`.opencode/plugin/mentor-session-start.ts`.
+
+Injects the memory protocol at session start:
+
+- Instructs the agent to search for prior context
+- Defines memory persistence patterns
+- Documents available Berry tools and CLI commands
+
+### Memory Tagging Conventions
+
+Use consistent tags for searchability:
+
+| Tag               | Purpose                              |
+| ----------------- | ------------------------------------ |
+| `mentor`          | All mentor session content           |
+| `staff`           | Staff trajectory related             |
+| `assignment`      | Actionable items with accountability |
+| `session-summary` | End-of-session recaps                |

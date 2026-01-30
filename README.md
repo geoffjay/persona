@@ -17,142 +17,53 @@ decisions, assignments, and follow-ups.
 - **Session Continuity**: Hooks that automatically retrieve prior context at session start
 - **Assignment Tracking**: Structured memory types for questions, requests, and information
 
-## Prerequisites
+## Getting Started
 
-- One of the following:
-  - [Claude Code](https://github.com/anthropics/claude-code)
-  - [OpenCode](https://opencode.ai)
+### Prerequisites
+
+- [OpenCode](https://opencode.ai)
 - [Berry](https://github.com/geoffjay/berry) - Memory management with MCP interface
-- [asdf](https://asdf-vm.com/) - Runtime version manager
-- [direnv](https://direnv.net/) - Automatic environment loading
-- [direnv extensions](https://github.com/geoffjay/direnv-extensions) - Helpers for direnv
 
-## Installation
+### Installation
+
+There are multiple ways to install most of the dependencies, this is just one example for macOS only:
 
 ```bash
-# Clone the repository
-git clone git@github.com:geoffjay/persona.git
-cd persona
-
-# Install runtimes
-asdf install
-
-# Install direnv extensions
-git clone https://github.com/geoffjay/direnv-extensions.git ~/.config/direnv
-
-# Allow direnv
-direnv allow
-
-# Configure environment
-cp .env.example .env
-# Edit .env with your Chroma credentials
+brew install opencode
+brew install geoffjay/tap/berry
+brew install geoffjay/tap/persona
 ```
 
-## Usage
+### Setup
 
-### Starting a Mentor Session
+#### Berry
 
-#### Claude Code
-
-The project includes a shell alias for quick access:
-
-```bash
-cc-mentor-staff "What should I focus on for my Staff trajectory?"
-```
-
-Or explicitly specify the persona:
+The persona project uses Berry to manage context, and Berry requires a Chroma database to store the context. You can
+either use a local database or a cloud-hosted database, using a cloud database is probably the easiest way to get
+started with a persistent database. This can be created at [trychroma.com](https://trychroma.com).
 
 ```bash
-claude --system-prompt-file ./.claude/personas/staff-trajectory-mentor.md
+brew services start geoffjay/tap/berry
+curl http://localhost:4114/health
 ```
 
 #### OpenCode
 
-The personas are used in an `opencode` session using the `--agent` flag:
+The persona user interface only supports OpenCode at this time, for it to work you need to authenticate with one of the
+OpenCode providers. Instructions on doing this are available at [opencode.ai](https://opencode.ai/docs/providers/), but
+typically this only involves executing the command `opencode auth login` and following the prompts for the desired
+provider.
 
-```bash
-opencode --agent staff-mentor
-```
+### Session Hook
 
-### Memory Operations
-
-Store memories from the CLI:
-
-```bash
-# Log an assignment
-berry remember "Review team's technical debt backlog" --type request --tags "assignment"
-
-# Save a question for later discussion
-berry remember "How do I measure Staff-level impact?" --type question
-
-# Search prior context
-berry search "session-summary mentor"
-
-# View specific memory
-berry recall <memory-id>
-
-# Remove outdated memory
-berry forget <memory-id>
-```
-
-### Session Workflow
-
-1. **Start**: Launch a session with `cc-mentor-staff` or `opencode --agent`
-2. **Context Load**: The session hook automatically searches for prior assignments and context
-3. **Accountability**: If pending assignments exist, the mentor asks for status before proceeding
-4. **Work**: Engage in context-aware discussion
-5. **Persist**: Key decisions, new assignments, and questions are stored in Berry
-
-## Configuration
-
-### Berry MCP
-
-#### Claude Code (`.mcp.json`)
-
-Configure the Berry memory server for Claude Code integration:
-
-```json
-{
-  "mcpServers": {
-    "berry": {
-      "command": "berry",
-      "args": ["mcp"]
-    }
-  }
-}
-```
-
-#### OpenCode (`.opencode/opencode.jsonc`)
-
-Configure the Berry memory server for OpenCode integration:
-
-```json
-{
-  "mcp": {
-    "berry": {
-      "type": "local",
-      "command": ["berry", "mcp"],
-      "enabled": true
-    }
-  }
-}
-```
-
-### Session Hook (`.claude/hooks/mentor-session-start.sh`)
+For Claude Code use this is located at `.claude/hooks/mentor-session-start.sh`, and for OpenCode at
+`.opencode/plugin/mentor-session-start.ts`.
 
 Injects the memory protocol at session start:
 
-- Instructs Claude to search for prior context
+- Instructs the agent to search for prior context
 - Defines memory persistence patterns
 - Documents available Berry tools and CLI commands
-
-### Environment (`.envrc`)
-
-Sets up the development environment:
-
-- Loads `.env` secrets
-- Adds bun to PATH
-- Creates the `cc-mentor-staff` alias
 
 ## Memory Tagging Conventions
 
@@ -164,36 +75,6 @@ Use consistent tags for searchability:
 | `staff`           | Staff trajectory related             |
 | `assignment`      | Actionable items with accountability |
 | `session-summary` | End-of-session recaps                |
-
-## Creating New Personas
-
-Use the included command to create additional personas:
-
-```bash
-claude /create-persona
-```
-
-This guides you through defining:
-
-- Identity and expertise
-- Voice and communication style
-- Behavioral guidelines
-- Interaction patterns
-- Boundaries and scope
-
-## Dependencies
-
-### Runtimes (via asdf)
-
-- bun 1.3.5
-- nodejs 24.2.0
-- uv 0.7.19
-
-### Services
-
-- **Berry** - Memory management (MCP server)
-- **Chroma** - Vector database backend (cloud or local)
-- **Ollama** (optional) - Local LLM inference
 
 ## License
 

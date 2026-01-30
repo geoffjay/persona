@@ -3,11 +3,11 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag (e.g., v0.1.0)'
+        description: "Release tag (e.g., v0.1.0)"
         required: true
         type: string
 
@@ -26,7 +26,7 @@ jobs:
           - os: macos-latest
             target: aarch64-apple-darwin
             arch: arm64
-          - os: macos-13
+          - os: macos-15-intel
             target: x86_64-apple-darwin
             arch: x86_64
 
@@ -76,6 +76,13 @@ jobs:
           path: artifacts
           merge-multiple: true
 
+      - name: List artifacts
+        run: |
+          echo "Contents of artifacts directory:"
+          ls -la artifacts/
+          echo "File details:"
+          file artifacts/* || true
+
       - name: Determine version
         id: version
         run: |
@@ -88,7 +95,7 @@ jobs:
       - name: Generate checksums
         run: |
           cd artifacts
-          shasum -a 256 *.tar.gz > checksums.txt
+          sha256sum *.tar.gz > checksums.txt
           cat checksums.txt
 
       - name: Create Release
@@ -99,6 +106,9 @@ jobs:
           draft: false
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
           generate_release_notes: true
+          fail_on_unmatched_files: true
           files: |
             artifacts/*.tar.gz
             artifacts/checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

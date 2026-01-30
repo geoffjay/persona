@@ -69,6 +69,39 @@ fi
 # Copy entitlements for reference (useful for code signing)
 cp "$ASSETS_DIR/entitlements.plist" "$BUNDLE_DIR/Contents/Resources/"
 
+# Copy data files (personas and .opencode config) into Resources
+echo "Copying data files to Resources..."
+
+# Copy personas directory
+if [[ -d "$PROJECT_ROOT/personas" ]]; then
+    cp -r "$PROJECT_ROOT/personas" "$BUNDLE_DIR/Contents/Resources/"
+    echo "  Copied personas directory"
+else
+    echo "Warning: No personas directory found"
+fi
+
+# Copy .opencode directory (only specific files: opencode.jsonc, commands/, plugin/)
+if [[ -d "$PROJECT_ROOT/.opencode" ]]; then
+    mkdir -p "$BUNDLE_DIR/Contents/Resources/.opencode"
+
+    if [[ -f "$PROJECT_ROOT/.opencode/opencode.jsonc" ]]; then
+        cp "$PROJECT_ROOT/.opencode/opencode.jsonc" "$BUNDLE_DIR/Contents/Resources/.opencode/"
+        echo "  Copied opencode.jsonc"
+    fi
+
+    if [[ -d "$PROJECT_ROOT/.opencode/commands" ]]; then
+        cp -r "$PROJECT_ROOT/.opencode/commands" "$BUNDLE_DIR/Contents/Resources/.opencode/"
+        echo "  Copied commands directory"
+    fi
+
+    if [[ -d "$PROJECT_ROOT/.opencode/plugin" ]]; then
+        cp -r "$PROJECT_ROOT/.opencode/plugin" "$BUNDLE_DIR/Contents/Resources/.opencode/"
+        echo "  Copied plugin directory"
+    fi
+else
+    echo "Warning: No .opencode directory found"
+fi
+
 # Create PkgInfo
 echo -n "APPL????" > "$BUNDLE_DIR/Contents/PkgInfo"
 

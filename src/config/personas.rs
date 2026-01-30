@@ -1,3 +1,4 @@
+use super::data::{data_dir, is_dev_mode};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -12,11 +13,30 @@ pub struct PersonasConfig {
 impl Default for PersonasConfig {
     fn default() -> Self {
         Self {
-            directory: dirs::config_dir()
-                .map(|p| p.join("persona").join("personas"))
-                .unwrap_or_else(|| PathBuf::from("personas")),
+            directory: default_personas_dir(),
         }
     }
+}
+
+/// Returns the default personas directory.
+///
+/// In dev mode: ./personas (relative to project root)
+/// In production: ~/Library/Application Support/persona/personas
+fn default_personas_dir() -> PathBuf {
+    if is_dev_mode() {
+        // In dev mode, use the local personas directory
+        if let Ok(cwd) = std::env::current_dir() {
+            let local_personas = cwd.join("personas");
+            if local_personas.exists() {
+                return local_personas;
+            }
+        }
+    }
+
+    // Production: use the data directory
+    data_dir()
+        .map(|p| p.join("personas"))
+        .unwrap_or_else(|| PathBuf::from("personas"))
 }
 
 #[cfg(test)]

@@ -6,7 +6,7 @@ mod state;
 mod ui;
 
 use app::App;
-use config::AppConfig;
+use config::{ensure_data_dir, AppConfig};
 use gpui::*;
 use gpui_component::Root;
 
@@ -15,6 +15,12 @@ fn main() {
     app.run(move |cx| {
         gpui_tokio_bridge::init(cx);
         gpui_component::init(cx);
+
+        // Ensure data directory exists and bootstrap from bundled resources if needed
+        // This copies personas and .opencode config on first run
+        if let Some(data_dir) = ensure_data_dir() {
+            eprintln!("Using data directory: {:?}", data_dir);
+        }
 
         // Load configuration from TOML file with environment variable overrides
         let config = AppConfig::load();

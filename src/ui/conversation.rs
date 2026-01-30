@@ -1,4 +1,4 @@
-use crate::config::AppConfig;
+use crate::config::{working_dir, AppConfig};
 use crate::persona::Persona;
 use anyhow::Result;
 use gpui::*;
@@ -62,10 +62,9 @@ impl ConversationView {
         cmd.arg("--agent");
         cmd.arg(&persona.id);
 
-        // Set the working directory to the project root where .opencode/opencode.jsonc lives
-        if let Ok(cwd) = std::env::current_dir() {
-            cmd.cwd(cwd);
-        }
+        // Set the working directory to where .opencode/opencode.jsonc lives
+        // In dev mode: project root; in production: ~/Library/Application Support/persona
+        cmd.cwd(working_dir());
 
         // Spawn the command in the PTY
         pair.slave.spawn_command(cmd)?;

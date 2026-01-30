@@ -14,6 +14,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   BINARY_NAME: persona
+  APP_NAME: Persona
 
 jobs:
   build:
@@ -44,20 +45,47 @@ jobs:
         with:
           key: ${{ matrix.target }}
 
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ inputs.tag }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+          # Strip 'v' prefix for version number
+          echo "version=${VERSION#v}" >> $GITHUB_OUTPUT
+          echo "tag=${VERSION}" >> $GITHUB_OUTPUT
+
       - name: Build release binary
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Package binary
+      - name: Create app bundle
+        run: ./scripts/bundle-macos.sh ${{ matrix.target }} ${{ steps.version.outputs.version }}
+
+      - name: Package binary (tar.gz)
         run: |
           cd target/${{ matrix.target }}/release
           tar -czvf ${{ env.BINARY_NAME }}-${{ matrix.target }}.tar.gz ${{ env.BINARY_NAME }}
           mv ${{ env.BINARY_NAME }}-${{ matrix.target }}.tar.gz ../../../
 
-      - name: Upload artifact
+      - name: Package app bundle (zip)
+        run: |
+          cd target/${{ matrix.target }}/release
+          zip -r ${{ env.APP_NAME }}-${{ matrix.target }}.zip ${{ env.APP_NAME }}.app
+          mv ${{ env.APP_NAME }}-${{ matrix.target }}.zip ../../../
+
+      - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.BINARY_NAME }}-${{ matrix.target }}
           path: ${{ env.BINARY_NAME }}-${{ matrix.target }}.tar.gz
+
+      - name: Upload app bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-${{ matrix.target }}
+          path: ${{ env.APP_NAME }}-${{ matrix.target }}.zip
 
   release:
     name: Create Release
@@ -95,7 +123,7 @@ jobs:
       - name: Generate checksums
         run: |
           cd artifacts
-          sha256sum *.tar.gz > checksums.txt
+          sha256sum *.tar.gz *.zip > checksums.txt
           cat checksums.txt
 
       - name: Create Release
@@ -109,6 +137,7 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             artifacts/*.tar.gz
+            artifacts/*.zip
             artifacts/checksums.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

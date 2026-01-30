@@ -31,7 +31,7 @@ There are multiple ways to install most of the dependencies, this is just one ex
 ```shell
 brew install opencode
 brew install geoffjay/tap/berry
-brew install geoffjay/tap/persona
+brew install --cask geoffjay/tap/persona
 ```
 
 ### Setup

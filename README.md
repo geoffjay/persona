@@ -28,7 +28,7 @@ decisions, assignments, and follow-ups.
 
 There are multiple ways to install most of the dependencies, this is just one example for macOS only:
 
-```bash
+```shell
 brew install opencode
 brew install geoffjay/tap/berry
 brew install geoffjay/tap/persona
@@ -36,13 +36,30 @@ brew install geoffjay/tap/persona
 
 ### Setup
 
-#### Berry
+#### ChromaDB
 
 The persona project uses Berry to manage context, and Berry requires a Chroma database to store the context. You can
 either use a local database or a cloud-hosted database, using a cloud database is probably the easiest way to get
 started with a persistent database. This can be created at [trychroma.com](https://trychroma.com).
 
-```bash
+If you choose to use a cloud database, the environment variables for the database need to be setup before starting. Edit
+the file `/opt/homebrew/etc/persona/server.env` and ensure the following changes are made:
+
+```
+# Local ChromaDB (comment out for cloud)
+# CHROMA_PROVIDER=local
+# CHROMA_URL=http://localhost:8000
+
+# Cloud ChromaDB
+CHROMA_PROVIDER=cloud
+CHROMA_API_KEY=<key-from-chroma>
+CHROMA_TENANT=<tenant-from-chroma>
+CHROMA_DATABASE=berry
+```
+
+#### Berry
+
+```shell
 brew services start geoffjay/tap/berry
 curl http://localhost:4114/health
 ```

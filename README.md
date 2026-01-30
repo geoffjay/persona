@@ -36,6 +36,14 @@ brew install geoffjay/tap/berry
 brew install --cask geoffjay/tap/persona
 ```
 
+### Fix macOS Verification
+
+Installing this on a macOS system requires a verification step, which can be skipped by running the following command:
+
+```shell
+xattr -rd com.apple.quarantine /Applications/Persona.app
+```
+
 ### Setup
 
 #### ChromaDB

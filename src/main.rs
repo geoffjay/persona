@@ -28,6 +28,12 @@ fn main() {
         let window_size = size(px(1200.), px(800.));
         let bounds = Bounds::centered(None, window_size, cx);
 
+        // Quit the application when the window is closed
+        cx.on_window_closed(|cx| {
+            cx.quit();
+        })
+        .detach();
+
         cx.open_window(
             WindowOptions {
                 window_bounds: Some(WindowBounds::Windowed(bounds)),

@@ -17,14 +17,21 @@
   },
   "lsp": {
     "markdown": {
-      "command": ["markdown-oxide"],
-      "extensions": [".md"],
+      "command": [
+        "markdown-oxide"
+      ],
+      "extensions": [
+        ".md"
+      ],
     },
   },
   "mcp": {
     "berry": {
       "type": "local",
-      "command": ["berry", "mcp"],
+      "command": [
+        "berry",
+        "mcp"
+      ],
       "enabled": true,
     },
     "linear": {
@@ -37,7 +44,7 @@
         "--rm",
         "--cap-drop=all",
         "--pull=always",
-        "076945025318.dkr.ecr.us-west-2.amazonaws.com/clio/mcp:linear-latest",
+        "{env:MCP_LINEAR_IMAGE}",
       ],
       "enabled": true,
     },
@@ -48,7 +55,7 @@
         "-y",
         "@upstash/context7-mcp",
         "--api-key",
-        "ctx7sk-23ee0f38-d9db-476a-be85-0aa333095926",
+        "{env:UPSTASH_CONTEXT7_API_KEY}",
       ],
       "enabled": true,
     },

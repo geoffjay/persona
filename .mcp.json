@@ -3,7 +3,9 @@
     "berry": {
       "type": "stdio",
       "command": "berry",
-      "args": ["mcp"]
+      "args": [
+        "mcp"
+      ]
     },
     "linear": {
       "type": "stdio",
@@ -15,7 +17,7 @@
         "--rm",
         "--cap-drop=all",
         "--pull=always",
-        "076945025318.dkr.ecr.us-west-2.amazonaws.com/clio/mcp:linear-latest"
+        "${MCP_LINEAR_IMAGE}"
       ]
     }
   }

@@ -19,29 +19,26 @@ impl std::fmt::Display for MemoryType {
     }
 }
 
-/// Metadata nested inside memory response
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MemoryMetadata {
-    pub created_at: DateTime<Utc>,
-    pub created_by: String,
-    #[serde(default)]
-    pub tags: Vec<String>,
+fn default_memory_type() -> MemoryType {
+    MemoryType::Information
 }
 
-/// Raw memory as returned by the API
+/// Raw memory as returned by berry-rs API (flat structure, snake_case)
 #[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct RawMemory {
     pub id: String,
     pub content: String,
     #[serde(rename = "type", default = "default_memory_type")]
     pub memory_type: MemoryType,
-    pub metadata: MemoryMetadata,
-}
-
-fn default_memory_type() -> MemoryType {
-    MemoryType::Information
+    #[serde(default)]
+    pub tags: Vec<String>,
+    pub created_by: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+    #[serde(default)]
+    pub visibility: String,
+    #[serde(default)]
+    pub shared_with: Vec<String>,
 }
 
 /// Flattened memory for easier use in the UI
@@ -61,9 +58,9 @@ impl From<RawMemory> for Memory {
             id: raw.id,
             content: raw.content,
             memory_type: raw.memory_type,
-            created_at: raw.metadata.created_at,
-            created_by: raw.metadata.created_by,
-            tags: raw.metadata.tags,
+            created_at: raw.created_at,
+            created_by: raw.created_by,
+            tags: raw.tags,
         }
     }
 }
@@ -81,13 +78,13 @@ pub struct SearchRequest {
     pub memory_type: Option<MemoryType>,
 }
 
+/// Response from berry-rs search endpoint
 #[derive(Debug, Clone, Deserialize)]
 pub struct SearchResponse {
     pub success: bool,
-    pub data: Vec<RawMemory>,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct GetMemoryResponse {
-    pub memory: RawMemory,
+    #[serde(default)]
+    pub memories: Vec<RawMemory>,
+    pub total: usize,
+    #[serde(default)]
+    pub error: Option<String>,
 }

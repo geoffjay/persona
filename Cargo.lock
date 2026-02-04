@@ -2399,8 +2399,7 @@ dependencies = [
 [[package]]
 name = "gpui-terminal"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "103183282be6cce6ab00c5e3503664b927683e8a1474131e148eae3645746c80"
+source = "git+https://github.com/geoffjay/gpui-terminal?branch=scroll#db2ed89ec820d30955ccfda1bbb15ce483180f59"
 dependencies = [
  "alacritty_terminal",
  "anyhow",

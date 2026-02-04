@@ -1,5 +1,7 @@
 mod app;
 mod config;
+mod http;
+mod knowledgebase;
 mod memory;
 mod persona;
 mod state;
@@ -11,7 +13,9 @@ use gpui::*;
 use gpui_component::Root;
 
 fn main() {
-    let app = Application::new().with_assets(gpui_component_assets::Assets);
+    let app = Application::new()
+        .with_assets(gpui_component_assets::Assets)
+        .with_http_client(http::ReqwestHttpClient::new());
     app.run(move |cx| {
         gpui_tokio_bridge::init(cx);
         gpui_component::init(cx);

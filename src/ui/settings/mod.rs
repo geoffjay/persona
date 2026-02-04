@@ -63,14 +63,11 @@ impl SettingsView {
                     .child(Label::new("Settings").text_sm()),
             )
             .child(
-                div()
-                    .flex_1()
-                    .overflow_hidden()
-                    .children(
-                        categories
-                            .iter()
-                            .map(|cat| self.render_category_item(*cat, cx)),
-                    ),
+                div().flex_1().overflow_hidden().children(
+                    categories
+                        .iter()
+                        .map(|cat| self.render_category_item(*cat, cx)),
+                ),
             )
     }
 

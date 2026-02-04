@@ -81,23 +81,21 @@ impl MemoryTable {
             )
     }
 
-    fn render_row(&self, index: usize, memory: &Memory, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render_row(
+        &self,
+        index: usize,
+        memory: &Memory,
+        cx: &mut Context<Self>,
+    ) -> impl IntoElement {
         let is_selected = self.selected_index == Some(index);
         let memory_clone = memory.clone();
         let entity = cx.entity().clone();
 
         // Format date
-        let created = memory
-            .created_at
-            .format("%Y-%m-%d %H:%M")
-            .to_string();
+        let created = memory.created_at.format("%Y-%m-%d %H:%M").to_string();
 
         // Truncate content for display
-        let content_preview: String = memory
-            .content
-            .chars()
-            .take(60)
-            .collect::<String>()
+        let content_preview: String = memory.content.chars().take(60).collect::<String>()
             + if memory.content.len() > 60 { "..." } else { "" };
 
         // Format tags

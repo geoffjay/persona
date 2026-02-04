@@ -1,7 +1,9 @@
 use crate::config::AppConfig;
 use crate::persona::Persona;
 use crate::state::{AppState, NavigationView};
-use crate::ui::{ConversationTabs, ConversationView, MemoryView, NavigationBar, PersonaList, SettingsView};
+use crate::ui::{
+    ConversationTabs, ConversationView, MemoryView, NavigationBar, PersonaList, SettingsView,
+};
 use gpui::*;
 use gpui_component::{h_flex, v_flex, ActiveTheme};
 use std::collections::HashMap;
@@ -28,11 +30,13 @@ impl App {
             NavigationBar::new(state.current_view, move |nav_view, _window, cx| {
                 view.update(cx, |this, cx| {
                     this.state.current_view = nav_view;
+                    this.sync_nav_bar(cx);
                     cx.notify();
                 });
             })
         });
 
+        let personas_for_memory = personas.clone();
         let persona_list = cx.new(|_cx| {
             let view = view.clone();
             PersonaList::new(personas, move |persona, window, cx| {
@@ -65,7 +69,14 @@ impl App {
 
         let settings_view = cx.new(|cx| SettingsView::new(_window, cx));
 
-        let memory_view = cx.new(|cx| MemoryView::new(config.berry_server_url().to_string(), _window, cx));
+        let memory_view = cx.new(|cx| {
+            MemoryView::new(
+                config.berry_server_url().to_string(),
+                personas_for_memory,
+                _window,
+                cx,
+            )
+        });
 
         Self {
             state,
@@ -78,7 +89,12 @@ impl App {
         }
     }
 
-    fn open_conversation(&mut self, persona: &Persona, window: &mut Window, cx: &mut Context<Self>) {
+    fn open_conversation(
+        &mut self,
+        persona: &Persona,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         self.state.open_conversation(persona);
 
         // Create conversation view if it doesn't exist
@@ -116,7 +132,22 @@ impl App {
         });
     }
 
-    fn render_main_content(&self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn sync_nav_bar(&self, cx: &mut Context<Self>) {
+        let nav_bar = self.nav_bar.clone();
+        let current_view = self.state.current_view;
+        cx.defer(move |cx| {
+            nav_bar.update(cx, |nav, inner_cx| {
+                nav.current_view = current_view;
+                inner_cx.notify();
+            });
+        });
+    }
+
+    fn render_main_content(
+        &self,
+        _window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> impl IntoElement {
         match self.state.current_view {
             NavigationView::Personas => self.render_personas_view(cx),
             NavigationView::Memory => self.memory_view.clone().into_any_element(),

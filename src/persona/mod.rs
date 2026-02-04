@@ -4,6 +4,8 @@ use std::path::PathBuf;
 #[derive(Debug, Clone, Deserialize)]
 pub struct PersonaFrontmatter {
     pub persona_id: String,
+    pub avatar_url: Option<String>,
+    pub knowledgebase_dir: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -11,6 +13,8 @@ pub struct Persona {
     pub id: String,
     pub name: String,
     pub file_path: PathBuf,
+    pub avatar_url: Option<String>,
+    pub knowledgebase_path: Option<PathBuf>,
 }
 
 impl Persona {
@@ -22,28 +26,48 @@ impl Persona {
         let meta: PersonaFrontmatter = serde_yaml::from_str(&frontmatter)?;
 
         // Extract name from first # heading or use file name
-        let name = Self::extract_name(&content)
-            .unwrap_or_else(|| {
-                path.file_stem()
-                    .and_then(|s| s.to_str())
-                    .unwrap_or("Unknown")
-                    .replace('-', " ")
-                    .split_whitespace()
-                    .map(|word| {
-                        let mut chars = word.chars();
-                        match chars.next() {
-                            Some(c) => c.to_uppercase().collect::<String>() + chars.as_str(),
-                            None => String::new(),
-                        }
-                    })
-                    .collect::<Vec<_>>()
-                    .join(" ")
-            });
+        let name = Self::extract_name(&content).unwrap_or_else(|| {
+            path.file_stem()
+                .and_then(|s| s.to_str())
+                .unwrap_or("Unknown")
+                .replace('-', " ")
+                .split_whitespace()
+                .map(|word| {
+                    let mut chars = word.chars();
+                    match chars.next() {
+                        Some(c) => c.to_uppercase().collect::<String>() + chars.as_str(),
+                        None => String::new(),
+                    }
+                })
+                .collect::<Vec<_>>()
+                .join(" ")
+        });
+
+        // Resolve knowledgebase path relative to persona file's directory
+        let knowledgebase_path = meta.knowledgebase_dir.and_then(|kb_path| {
+            let kb_pathbuf = PathBuf::from(&kb_path);
+            let resolved = if kb_pathbuf.is_absolute() {
+                kb_pathbuf
+            } else {
+                path.parent()?.join(kb_pathbuf)
+            };
+            if resolved.exists() && resolved.is_dir() {
+                Some(resolved)
+            } else {
+                eprintln!(
+                    "Warning: Knowledgebase directory does not exist: {:?}",
+                    resolved
+                );
+                None
+            }
+        });
 
         Ok(Self {
             id: meta.persona_id,
             name,
             file_path: path,
+            avatar_url: meta.avatar_url,
+            knowledgebase_path,
         })
     }
 

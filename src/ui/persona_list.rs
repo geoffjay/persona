@@ -1,7 +1,8 @@
 use crate::persona::Persona;
 use gpui::*;
+use gpui_component::avatar::Avatar;
 use gpui_component::list::ListItem;
-use gpui_component::{h_flex, label::Label, v_flex, ActiveTheme, Icon, IconName, Sizable};
+use gpui_component::{h_flex, label::Label, v_flex, ActiveTheme, Sizable};
 
 pub struct PersonaList {
     pub personas: Vec<Persona>,
@@ -19,6 +20,14 @@ impl PersonaList {
             selected_index: None,
             on_select: Box::new(on_select),
         }
+    }
+
+    fn render_avatar(&self, persona: &Persona) -> Avatar {
+        let mut avatar = Avatar::new().name(persona.name.clone()).small();
+        if let Some(url) = &persona.avatar_url {
+            avatar = avatar.src(url.clone());
+        }
+        avatar
     }
 
     fn render_persona_item(
@@ -39,16 +48,7 @@ impl PersonaList {
                 h_flex()
                     .gap_2()
                     .items_center()
-                    .child(
-                        div()
-                            .size_8()
-                            .rounded_full()
-                            .bg(cx.theme().accent)
-                            .flex()
-                            .items_center()
-                            .justify_center()
-                            .child(Icon::new(IconName::User).small().text_color(cx.theme().accent_foreground)),
-                    )
+                    .child(self.render_avatar(persona))
                     .child(Label::new(persona.name.clone())),
             )
             .on_click(move |_, window, cx| {
@@ -82,16 +82,12 @@ impl Render for PersonaList {
                     .child(Label::new("Personas").text_sm()),
             )
             .child(
-                div()
-                    .w_full()
-                    .flex_1()
-                    .overflow_hidden()
-                    .children(
-                        personas
-                            .iter()
-                            .enumerate()
-                            .map(|(i, p)| self.render_persona_item(i, p, cx)),
-                    ),
+                div().w_full().flex_1().overflow_hidden().children(
+                    personas
+                        .iter()
+                        .enumerate()
+                        .map(|(i, p)| self.render_persona_item(i, p, cx)),
+                ),
             )
     }
 }

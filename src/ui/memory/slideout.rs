@@ -2,8 +2,7 @@ use crate::memory::Memory;
 use gpui::*;
 use gpui_component::{
     button::{Button, ButtonVariants},
-    h_flex,
-    v_flex, ActiveTheme, IconName, Sizable,
+    h_flex, v_flex, ActiveTheme, IconName, Sizable,
 };
 use std::sync::Arc;
 
@@ -99,11 +98,16 @@ impl MemorySlideout {
                     .w_full()
                     .child(self.render_section("Metadata", cx))
                     .child(self.render_metadata_row("ID", &memory.id, cx))
-                    .child(self.render_metadata_row(
-                        "Created",
-                        &memory.created_at.format("%Y-%m-%d %H:%M:%S UTC").to_string(),
-                        cx,
-                    ))
+                    .child(
+                        self.render_metadata_row(
+                            "Created",
+                            &memory
+                                .created_at
+                                .format("%Y-%m-%d %H:%M:%S UTC")
+                                .to_string(),
+                            cx,
+                        ),
+                    )
                     .child(self.render_metadata_row("Author", &memory.created_by, cx))
                     .child(self.render_metadata_row("Type", &memory.memory_type.to_string(), cx))
                     .child(self.render_metadata_row(

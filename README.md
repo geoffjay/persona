@@ -61,10 +61,12 @@ the file `/opt/homebrew/etc/persona/server.env` and ensure the following changes
 # CHROMA_URL=http://localhost:8000
 
 # Cloud ChromaDB
+CHROMA_URL=https://api.trychroma.com
 CHROMA_PROVIDER=cloud
 CHROMA_API_KEY=<key-from-chroma>
 CHROMA_TENANT=<tenant-from-chroma>
 CHROMA_DATABASE=berry
+CHROMA_COLLECTION=memories
 ```
 
 #### Berry

@@ -1,5 +1,7 @@
 ---
 persona_id: personal-assistant
+avatar_url: https://gravatar.com/avatar/fa9e5fbd868f432f74e996d39686b805?s=64&d=robohash
+knowledgebase_dir: ./kb/personal-assistant
 ---
 
 # Personal Assistant

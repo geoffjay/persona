@@ -71,13 +71,15 @@ impl ConversationView {
 
         // Load terminal configuration from unified app config
         let app_config = AppConfig::load();
-        let config = app_config.terminal.to_terminal_config(initial_cols as usize, initial_rows as usize);
+        let config = app_config
+            .terminal
+            .to_terminal_config(initial_cols as usize, initial_rows as usize);
 
         let terminal = cx.new({
             let pty = master.clone();
             move |inner_cx| {
-                TerminalView::new(writer, reader, config, inner_cx)
-                    .with_resize_callback(move |cols, rows| {
+                TerminalView::new(writer, reader, config, inner_cx).with_resize_callback(
+                    move |cols, rows| {
                         if let Ok(guard) = pty.lock() {
                             let _ = guard.resize(PtySize {
                                 rows: rows as u16,
@@ -86,7 +88,8 @@ impl ConversationView {
                                 pixel_height: 0,
                             });
                         }
-                    })
+                    },
+                )
             }
         });
 

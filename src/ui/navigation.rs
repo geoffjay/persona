@@ -48,6 +48,7 @@ impl Render for NavigationBar {
             .id("navigation-bar")
             .h_full()
             .w(px(48.))
+            .flex_shrink_0()
             .border_r_1()
             .border_color(cx.theme().border)
             .bg(cx.theme().sidebar)

@@ -61,6 +61,7 @@ impl ConversationView {
         let mut cmd = CommandBuilder::new("opencode");
         cmd.arg("--agent");
         cmd.arg(&persona.id);
+        cmd.arg("--continue");
 
         // Set the working directory to where .opencode/opencode.jsonc lives
         // In dev mode: project root; in production: ~/Library/Application Support/persona

@@ -1,5 +1,5 @@
 use gpui::*;
-use gpui_component::ActiveTheme;
+use gpui_component::{ActiveTheme, InteractiveElementExt};
 
 pub struct HeaderBar;
 
@@ -19,5 +19,8 @@ impl Render for HeaderBar {
             .bg(cx.theme().sidebar)
             .border_b_1()
             .border_color(cx.theme().border)
+            .on_double_click(|_event, window: &mut Window, _cx| {
+                window.zoom_window();
+            })
     }
 }

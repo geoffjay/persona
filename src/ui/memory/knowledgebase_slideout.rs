@@ -169,7 +169,7 @@ impl Render for KnowledgebaseSlideout {
         };
 
         v_flex()
-            .w(px(500.))
+            .w(px(600.))
             .h_full()
             .border_l_1()
             .border_color(cx.theme().border)

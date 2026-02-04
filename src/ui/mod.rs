@@ -2,6 +2,8 @@ pub mod memory;
 mod navigation;
 mod persona;
 mod settings;
+pub mod theme;
+pub mod window;
 
 pub use memory::MemoryView;
 pub use navigation::NavigationBar;

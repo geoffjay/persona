@@ -22,6 +22,12 @@ fn main() {
         gpui_tokio_bridge::init(cx);
         gpui_component::init(cx);
 
+        // Unbind Tab from focus navigation so it passes through to terminals
+        cx.bind_keys([
+            KeyBinding::new("tab", NoAction, Some("Root")),
+            KeyBinding::new("shift-tab", NoAction, Some("Root")),
+        ]);
+
         // Ensure data directory exists and bootstrap from bundled resources if needed
         // This copies personas and .opencode config on first run
         if let Some(data_dir) = ensure_data_dir() {

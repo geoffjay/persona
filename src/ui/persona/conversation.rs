@@ -14,6 +14,7 @@ pub struct ConversationView {
     #[allow(dead_code)]
     pty_master: Option<Arc<Mutex<Box<dyn portable_pty::MasterPty + Send>>>>,
     error: Option<String>,
+    needs_focus: bool,
 }
 
 impl ConversationView {
@@ -23,6 +24,7 @@ impl ConversationView {
             terminal: None,
             pty_master: None,
             error: None,
+            needs_focus: true,
         };
 
         if let Err(e) = view.spawn_terminal(&persona, window, cx) {
@@ -30,6 +32,14 @@ impl ConversationView {
         }
 
         view
+    }
+
+    /// Request focus for the terminal
+    pub fn focus(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(terminal) = &self.terminal {
+            let focus_handle = terminal.read(cx).focus_handle().clone();
+            window.focus(&focus_handle);
+        }
     }
 
     fn spawn_terminal(
@@ -100,32 +110,42 @@ impl ConversationView {
 }
 
 impl Render for ConversationView {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let content = if let Some(error) = &self.error {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        if let Some(error) = &self.error {
             div()
+                .id("conversation-view")
                 .size_full()
                 .flex()
                 .items_center()
                 .justify_center()
+                .bg(cx.theme().background)
                 .text_color(gpui::red())
                 .child(error.clone())
                 .into_any_element()
         } else if let Some(terminal) = &self.terminal {
-            terminal.clone().into_any_element()
+            // Focus the terminal on first render so it receives keyboard input
+            if self.needs_focus {
+                let focus_handle = terminal.read(cx).focus_handle().clone();
+                window.focus(&focus_handle);
+                self.needs_focus = false;
+            }
+
+            // Wrap terminal in a flex container to ensure it fills available space
+            div()
+                .flex_1()
+                .size_full()
+                .child(terminal.clone())
+                .into_any_element()
         } else {
             div()
+                .id("conversation-view")
                 .size_full()
                 .flex()
                 .items_center()
                 .justify_center()
+                .bg(cx.theme().background)
                 .child("Loading terminal...")
                 .into_any_element()
-        };
-
-        div()
-            .id("conversation-view")
-            .size_full()
-            .bg(cx.theme().background)
-            .child(content)
+        }
     }
 }

@@ -43,6 +43,7 @@ impl PersonaList {
         ListItem::new(("persona", index))
             .py_2()
             .px_3()
+            .h(px(48.))
             .selected(is_selected)
             .child(
                 h_flex()
@@ -62,7 +63,12 @@ impl PersonaList {
 
 impl Render for PersonaList {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let personas = self.personas.clone();
+        let items: Vec<_> = self
+            .personas
+            .iter()
+            .enumerate()
+            .map(|(i, p)| self.render_persona_item(i, p, cx))
+            .collect();
 
         v_flex()
             .id("persona-list")
@@ -81,13 +87,6 @@ impl Render for PersonaList {
                     .border_color(cx.theme().border)
                     .child(Label::new("Personas").text_sm()),
             )
-            .child(
-                div().w_full().flex_1().overflow_hidden().children(
-                    personas
-                        .iter()
-                        .enumerate()
-                        .map(|(i, p)| self.render_persona_item(i, p, cx)),
-                ),
-            )
+            .child(div().w_full().flex_1().overflow_hidden().children(items))
     }
 }

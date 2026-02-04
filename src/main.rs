@@ -29,8 +29,9 @@ fn main() {
         // Load configuration from TOML file with environment variable overrides
         let config = AppConfig::load();
 
-        let window_size = size(px(1200.), px(800.));
-        let bounds = Bounds::centered(None, window_size, cx);
+        // Default window size when restored from maximized state
+        let restored_size = size(px(1200.), px(800.));
+        let restored_bounds = Bounds::centered(None, restored_size, cx);
 
         // Quit the application when the window is closed
         cx.on_window_closed(|cx| {
@@ -40,7 +41,7 @@ fn main() {
 
         cx.open_window(
             WindowOptions {
-                window_bounds: Some(WindowBounds::Windowed(bounds)),
+                window_bounds: Some(WindowBounds::Maximized(restored_bounds)),
                 titlebar: Some(TitlebarOptions {
                     title: Some("Persona UI".into()),
                     ..Default::default()

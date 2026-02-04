@@ -334,7 +334,7 @@ impl MemoryView {
         v_flex()
             .id("memory-categories")
             .h_full()
-            .w(px(200.))
+            .w(px(300.))
             .border_r_1()
             .border_color(cx.theme().border)
             .bg(cx.theme().sidebar)
@@ -359,6 +359,7 @@ impl MemoryView {
                             ListItem::new(("memory-cat", index))
                                 .py_2()
                                 .px_3()
+                                .h(px(48.))
                                 .selected(is_selected)
                                 .child(
                                     h_flex()

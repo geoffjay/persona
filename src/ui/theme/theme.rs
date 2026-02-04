@@ -24,6 +24,23 @@ pub static THEMES: LazyLock<HashMap<SharedString, ThemeConfig>> = LazyLock::new(
     themes
 });
 
+/// Get a sorted list of all available theme names
+pub fn get_theme_names() -> Vec<String> {
+    let mut names: Vec<String> = THEMES.keys().map(|k| k.to_string()).collect();
+    names.sort();
+    names
+}
+
+/// Apply a theme by name
+pub fn apply_theme(name: &str, cx: &mut App) {
+    if let Some(theme_config) = THEMES.get(name) {
+        let theme_config = Rc::new(theme_config.clone());
+        let theme = Theme::global_mut(cx);
+        theme.mode = theme_config.mode;
+        theme.apply_config(&theme_config);
+    }
+}
+
 // Apply a theme by color mode
 pub fn change_color_mode(mode: ThemeMode, _win: &mut Window, cx: &mut App) {
     let theme_name = match mode {
@@ -31,10 +48,5 @@ pub fn change_color_mode(mode: ThemeMode, _win: &mut Window, cx: &mut App) {
         ThemeMode::Dark => "Kanagawa Wave",
     };
 
-    if let Some(theme_config) = THEMES.get(theme_name) {
-        let theme_config = Rc::new(theme_config.clone());
-        let theme = Theme::global_mut(cx);
-        theme.mode = theme_config.mode;
-        theme.apply_config(&theme_config);
-    }
+    apply_theme(theme_name, cx);
 }

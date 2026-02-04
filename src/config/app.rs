@@ -1,5 +1,5 @@
 use super::terminal::TerminalConfig;
-use super::{BerryConfig, PersonasConfig};
+use super::{BerryConfig, GeneralConfig, PersonasConfig};
 use crate::persona::Persona;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -9,6 +9,9 @@ use std::path::PathBuf;
 #[serde(default)]
 #[derive(Default)]
 pub struct AppConfig {
+    /// General application settings
+    pub general: GeneralConfig,
+
     /// Terminal configuration
     pub terminal: TerminalConfig,
 
@@ -197,6 +200,7 @@ mod tests {
                 personas: PersonasConfig {
                     directory: PathBuf::from("/custom/path"),
                 },
+                ..Default::default()
             };
 
             let toml_str = toml::to_string_pretty(&config).expect("Failed to serialize");
@@ -285,6 +289,7 @@ mod tests {
                 personas: PersonasConfig {
                     directory: PathBuf::from("/test/personas"),
                 },
+                ..Default::default()
             };
 
             config

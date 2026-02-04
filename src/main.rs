@@ -10,8 +10,8 @@ mod ui;
 use app::App;
 use config::{ensure_data_dir, AppConfig};
 use gpui::*;
-use gpui_component::{ActiveTheme as _, Root};
-use ui::{theme::change_color_mode, window::get_window_options};
+use gpui_component::Root;
+use ui::{theme::apply_theme, window::get_window_options};
 
 fn main() {
     let app = Application::new()
@@ -39,7 +39,8 @@ fn main() {
 
         let window_options = get_window_options(cx);
         cx.open_window(window_options, |window, cx| {
-            change_color_mode(cx.theme().mode, window, cx);
+            // Apply the saved theme from config
+            apply_theme(&config.general.theme, cx);
 
             let view = cx.new(|cx| App::new(config, window, cx));
             cx.new(|cx| Root::new(view, window, cx))

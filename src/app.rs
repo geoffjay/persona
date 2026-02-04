@@ -2,7 +2,8 @@ use crate::config::AppConfig;
 use crate::persona::Persona;
 use crate::state::{AppState, NavigationView};
 use crate::ui::{
-    ConversationTabs, ConversationView, MemoryView, NavigationBar, PersonaList, SettingsView,
+    ConversationTabs, ConversationView, FooterBar, HeaderBar, MemoryView, NavigationBar,
+    PersonaList, SettingsView,
 };
 use gpui::*;
 use gpui_component::{h_flex, v_flex, ActiveTheme};
@@ -10,6 +11,8 @@ use std::collections::HashMap;
 
 pub struct App {
     state: AppState,
+    header_bar: Entity<HeaderBar>,
+    footer_bar: Entity<FooterBar>,
     nav_bar: Entity<NavigationBar>,
     persona_list: Entity<PersonaList>,
     tabs: Entity<ConversationTabs>,
@@ -24,6 +27,9 @@ impl App {
         let state = AppState::new(personas.clone());
 
         let view = cx.entity().clone();
+
+        let header_bar = cx.new(|_cx| HeaderBar::new());
+        let footer_bar = cx.new(|_cx| FooterBar::new());
 
         let nav_bar = cx.new(|_cx| {
             let view = view.clone();
@@ -80,6 +86,8 @@ impl App {
 
         Self {
             state,
+            header_bar,
+            footer_bar,
             nav_bar,
             persona_list,
             tabs,
@@ -197,10 +205,18 @@ impl App {
 
 impl Render for App {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        h_flex()
+        v_flex()
             .size_full()
             .bg(cx.theme().background)
-            .child(self.nav_bar.clone())
-            .child(self.render_main_content(window, cx))
+            .child(self.header_bar.clone())
+            .child(
+                h_flex()
+                    .flex_1()
+                    .w_full()
+                    .overflow_hidden()
+                    .child(self.nav_bar.clone())
+                    .child(self.render_main_content(window, cx)),
+            )
+            .child(self.footer_bar.clone())
     }
 }

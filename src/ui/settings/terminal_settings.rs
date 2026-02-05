@@ -64,7 +64,18 @@ impl TerminalSettingsPanel {
         }));
 
         // Create theme select with simple strings
-        let themes: Vec<&'static str> = vec!["tokyo-night", "gruvbox", "catppuccin"];
+        let themes: Vec<&'static str> = vec![
+            "catppuccin-frappe",
+            "catppuccin-latte",
+            "catppuccin-macchiato",
+            "catppuccin-mocha",
+            "gruvbox-dark",
+            "gruvbox-light",
+            "kanagawa-dragon",
+            "kanagawa-lotus",
+            "kanagawa-wave",
+            "tokyo-night",
+        ];
 
         let current_theme_index = match &self.config.theme {
             TerminalThemeConfig::Named(name) => themes

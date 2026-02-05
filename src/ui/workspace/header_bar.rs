@@ -3,7 +3,7 @@ use gpui_component::{
     button::{Button, ButtonVariants as _},
     h_flex,
     label::Label,
-    ActiveTheme as _, IconName, Sizable as _, TitleBar,
+    IconName, Sizable as _, TitleBar,
 };
 
 pub struct HeaderBar;
@@ -19,7 +19,7 @@ impl HeaderBar {
 }
 
 impl Render for HeaderBar {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
         let github_button = Button::new("github")
             .icon(IconName::GitHub)
             .small()

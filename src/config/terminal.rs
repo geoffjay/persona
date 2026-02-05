@@ -149,8 +149,15 @@ impl TerminalTheme {
     pub fn from_name(name: &str) -> Self {
         match name.to_lowercase().as_str() {
             "tokyo-night" | "tokyo_night" | "tokyonight" => Self::tokyo_night(),
-            "gruvbox" | "gruvbox-dark" => Self::gruvbox_dark(),
-            "catppuccin" | "catppuccin-mocha" => Self::catppuccin_mocha(),
+            "gruvbox-dark" | "gruvbox dark" => Self::gruvbox_dark(),
+            "gruvbox-light" | "gruvbox light" => Self::gruvbox_light(),
+            "catppuccin-mocha" | "catppuccin mocha" => Self::catppuccin_mocha(),
+            "catppuccin-macchiato" | "catppuccin macchiato" => Self::catppuccin_macchiato(),
+            "catppuccin-frappe" | "catppuccin frappe" => Self::catppuccin_frappe(),
+            "catppuccin-latte" | "catppuccin latte" => Self::catppuccin_latte(),
+            "kanagawa-wave" | "kanagawa wave" => Self::kanagawa_wave(),
+            "kanagawa-dragon" | "kanagawa dragon" => Self::kanagawa_dragon(),
+            "kanagawa-lotus" | "kanagawa lotus" => Self::kanagawa_lotus(),
             _ => Self::tokyo_night(),
         }
     }
@@ -235,6 +242,195 @@ impl TerminalTheme {
             bright_magenta: "#f5c2e7".into(),
             bright_cyan: "#94e2d5".into(),
             bright_white: "#a6adc8".into(),
+        }
+    }
+
+    /// Catppuccin Macchiato theme
+    pub fn catppuccin_macchiato() -> Self {
+        Self {
+            background: "#24273a".into(),
+            foreground: "#cad3f5".into(),
+            cursor: "#f4dbd6".into(),
+
+            black: "#494d64".into(),
+            red: "#ed8796".into(),
+            green: "#a6da95".into(),
+            yellow: "#eed49f".into(),
+            blue: "#8aadf4".into(),
+            magenta: "#f5bde6".into(),
+            cyan: "#8bd5ca".into(),
+            white: "#b8c0e0".into(),
+
+            bright_black: "#5b6078".into(),
+            bright_red: "#ed8796".into(),
+            bright_green: "#a6da95".into(),
+            bright_yellow: "#eed49f".into(),
+            bright_blue: "#8aadf4".into(),
+            bright_magenta: "#f5bde6".into(),
+            bright_cyan: "#8bd5ca".into(),
+            bright_white: "#a5adcb".into(),
+        }
+    }
+
+    /// Catppuccin Frappe theme
+    pub fn catppuccin_frappe() -> Self {
+        Self {
+            background: "#303446".into(),
+            foreground: "#c6d0f5".into(),
+            cursor: "#f2d5cf".into(),
+
+            black: "#51576d".into(),
+            red: "#e78284".into(),
+            green: "#a6d189".into(),
+            yellow: "#e5c890".into(),
+            blue: "#8caaee".into(),
+            magenta: "#f4b8e4".into(),
+            cyan: "#81c8be".into(),
+            white: "#b5bfe2".into(),
+
+            bright_black: "#626880".into(),
+            bright_red: "#e78284".into(),
+            bright_green: "#a6d189".into(),
+            bright_yellow: "#e5c890".into(),
+            bright_blue: "#8caaee".into(),
+            bright_magenta: "#f4b8e4".into(),
+            bright_cyan: "#81c8be".into(),
+            bright_white: "#a5adce".into(),
+        }
+    }
+
+    /// Catppuccin Latte theme (light)
+    pub fn catppuccin_latte() -> Self {
+        Self {
+            background: "#eff1f5".into(),
+            foreground: "#4c4f69".into(),
+            cursor: "#dc8a78".into(),
+
+            black: "#5c5f77".into(),
+            red: "#d20f39".into(),
+            green: "#40a02b".into(),
+            yellow: "#df8e1d".into(),
+            blue: "#1e66f5".into(),
+            magenta: "#8839ef".into(),
+            cyan: "#179299".into(),
+            white: "#acb0be".into(),
+
+            bright_black: "#6c6f85".into(),
+            bright_red: "#d20f39".into(),
+            bright_green: "#40a02b".into(),
+            bright_yellow: "#df8e1d".into(),
+            bright_blue: "#1e66f5".into(),
+            bright_magenta: "#8839ef".into(),
+            bright_cyan: "#179299".into(),
+            bright_white: "#bcc0cc".into(),
+        }
+    }
+
+    /// Kanagawa Wave theme
+    pub fn kanagawa_wave() -> Self {
+        Self {
+            background: "#1f1f28".into(),
+            foreground: "#dcd7ba".into(),
+            cursor: "#c8c093".into(),
+
+            black: "#16161d".into(),
+            red: "#c34043".into(),
+            green: "#76946a".into(),
+            yellow: "#c0a36e".into(),
+            blue: "#7e9cd8".into(),
+            magenta: "#957fb8".into(),
+            cyan: "#6a9589".into(),
+            white: "#c8c093".into(),
+
+            bright_black: "#727169".into(),
+            bright_red: "#e82424".into(),
+            bright_green: "#98bb6c".into(),
+            bright_yellow: "#e6c384".into(),
+            bright_blue: "#7fb4ca".into(),
+            bright_magenta: "#938aa9".into(),
+            bright_cyan: "#7aa89f".into(),
+            bright_white: "#dcd7ba".into(),
+        }
+    }
+
+    /// Kanagawa Dragon theme
+    pub fn kanagawa_dragon() -> Self {
+        Self {
+            background: "#181616".into(),
+            foreground: "#c5c9c5".into(),
+            cursor: "#c8c093".into(),
+
+            black: "#0d0c0c".into(),
+            red: "#c4746e".into(),
+            green: "#8a9a7b".into(),
+            yellow: "#c4b28a".into(),
+            blue: "#8ba4b0".into(),
+            magenta: "#a292a3".into(),
+            cyan: "#8ea4a2".into(),
+            white: "#c8c093".into(),
+
+            bright_black: "#a6a69c".into(),
+            bright_red: "#e46876".into(),
+            bright_green: "#87a987".into(),
+            bright_yellow: "#e6c384".into(),
+            bright_blue: "#7fb4ca".into(),
+            bright_magenta: "#938aa9".into(),
+            bright_cyan: "#7aa89f".into(),
+            bright_white: "#c5c9c5".into(),
+        }
+    }
+
+    /// Kanagawa Lotus theme (light)
+    pub fn kanagawa_lotus() -> Self {
+        Self {
+            background: "#f2ecbc".into(),
+            foreground: "#545464".into(),
+            cursor: "#43436c".into(),
+
+            black: "#1f1f28".into(),
+            red: "#c84053".into(),
+            green: "#6f894e".into(),
+            yellow: "#77713f".into(),
+            blue: "#4d699b".into(),
+            magenta: "#b35b79".into(),
+            cyan: "#597b75".into(),
+            white: "#545464".into(),
+
+            bright_black: "#8a8980".into(),
+            bright_red: "#d7474b".into(),
+            bright_green: "#6e915f".into(),
+            bright_yellow: "#836f4a".into(),
+            bright_blue: "#6693bf".into(),
+            bright_magenta: "#624c83".into(),
+            bright_cyan: "#5e857a".into(),
+            bright_white: "#43436c".into(),
+        }
+    }
+
+    /// Gruvbox Light theme
+    pub fn gruvbox_light() -> Self {
+        Self {
+            background: "#fbf1c7".into(),
+            foreground: "#3c3836".into(),
+            cursor: "#3c3836".into(),
+
+            black: "#fbf1c7".into(),
+            red: "#cc241d".into(),
+            green: "#98971a".into(),
+            yellow: "#d79921".into(),
+            blue: "#458588".into(),
+            magenta: "#b16286".into(),
+            cyan: "#689d6a".into(),
+            white: "#7c6f64".into(),
+
+            bright_black: "#928374".into(),
+            bright_red: "#9d0006".into(),
+            bright_green: "#79740e".into(),
+            bright_yellow: "#b57614".into(),
+            bright_blue: "#076678".into(),
+            bright_magenta: "#8f3f71".into(),
+            bright_cyan: "#427b58".into(),
+            bright_white: "#3c3836".into(),
         }
     }
 

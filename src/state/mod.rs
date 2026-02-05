@@ -1,17 +1,12 @@
 use crate::persona::Persona;
 use gpui::SharedString;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum NavigationView {
+    #[default]
     Personas,
     Memory,
     Settings,
-}
-
-impl Default for NavigationView {
-    fn default() -> Self {
-        Self::Personas
-    }
 }
 
 #[derive(Debug, Clone)]

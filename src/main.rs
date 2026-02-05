@@ -36,7 +36,6 @@ fn main() {
             eprintln!("Using data directory: {:?}", data_dir);
         }
 
-        // Load configuration from TOML file with environment variable overrides
         let config = AppConfig::load();
 
         // Quit the application when the window is closed
@@ -47,7 +46,6 @@ fn main() {
 
         let window_options = get_window_options(cx);
         cx.open_window(window_options, |window, cx| {
-            // Apply the saved theme from config
             apply_theme(&config.general.theme, cx);
 
             let view = cx.new(|cx| App::new(config, window, cx));

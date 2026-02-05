@@ -19,6 +19,7 @@ pub struct App {
     conversations: HashMap<String, Entity<ConversationView>>,
     settings_view: Entity<SettingsView>,
     memory_view: Entity<MemoryView>,
+    _subscriptions: Vec<Subscription>,
 }
 
 impl App {
@@ -84,6 +85,8 @@ impl App {
             )
         });
 
+        let _subscriptions = vec![];
+
         Self {
             state,
             header_bar,
@@ -94,6 +97,7 @@ impl App {
             conversations: HashMap::new(),
             settings_view,
             memory_view,
+            _subscriptions,
         }
     }
 

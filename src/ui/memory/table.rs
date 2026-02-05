@@ -39,7 +39,7 @@ impl MemoryTable {
             .bg(cx.theme().muted)
             .child(
                 div()
-                    .w(px(80.))
+                    .w(px(200.))
                     .text_sm()
                     .font_weight(FontWeight::SEMIBOLD)
                     .child("ID"),
@@ -60,14 +60,14 @@ impl MemoryTable {
             )
             .child(
                 div()
-                    .w(px(100.))
+                    .w(px(200.))
                     .text_sm()
                     .font_weight(FontWeight::SEMIBOLD)
                     .child("Author"),
             )
             .child(
                 div()
-                    .w(px(120.))
+                    .w(px(200.))
                     .text_sm()
                     .font_weight(FontWeight::SEMIBOLD)
                     .child("Tags"),
@@ -125,7 +125,7 @@ impl MemoryTable {
                     .gap_0()
                     .child(
                         div()
-                            .w(px(80.))
+                            .w(px(200.))
                             .text_sm()
                             .text_color(cx.theme().muted_foreground)
                             .overflow_hidden()
@@ -147,7 +147,7 @@ impl MemoryTable {
                     )
                     .child(
                         div()
-                            .w(px(100.))
+                            .w(px(200.))
                             .text_sm()
                             .text_color(cx.theme().muted_foreground)
                             .overflow_hidden()
@@ -155,7 +155,7 @@ impl MemoryTable {
                     )
                     .child(
                         div()
-                            .w(px(120.))
+                            .w(px(200.))
                             .text_sm()
                             .text_color(cx.theme().muted_foreground)
                             .overflow_hidden()

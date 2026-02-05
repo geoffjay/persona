@@ -79,18 +79,22 @@ impl PersonaPanel {
             cx.new(|_cx| TerminalHeaderBar::new(persona_clone.name.clone(), self.is_expanded));
 
         // Subscribe to header bar events
-        let persona_id = persona.id.clone();
+        let persona_id_for_toggle = persona.id.clone();
+        let persona_id_for_close = persona.id.clone();
         let subscription = cx.subscribe(&header, move |this, _header, event, cx| match event {
             TerminalHeaderBarEvent::ToggleExpanded => {
                 this.is_expanded = !this.is_expanded;
                 // Update the header bar's expanded state for this session
-                if let Some(session) = this.sessions.get(&persona_id) {
+                if let Some(session) = this.sessions.get(&persona_id_for_toggle) {
                     session.header.update(cx, |h, hcx| {
                         h.set_expanded(this.is_expanded);
                         hcx.notify();
                     });
                 }
                 cx.notify();
+            }
+            TerminalHeaderBarEvent::CloseSession => {
+                this.close_session(&persona_id_for_close, cx);
             }
         });
 
@@ -104,6 +108,19 @@ impl PersonaPanel {
         self.sessions.insert(persona.id.clone(), session);
 
         // Update the persona list to show active sessions
+        self.sync_active_sessions(cx);
+
+        cx.notify();
+    }
+
+    fn close_session(&mut self, persona_id: &str, cx: &mut Context<Self>) {
+        // Remove the session
+        self.sessions.remove(persona_id);
+
+        // Collapse the sidebar when closing
+        self.is_expanded = false;
+
+        // Update the persona list to remove the active session badge
         self.sync_active_sessions(cx);
 
         cx.notify();

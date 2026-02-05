@@ -5,6 +5,7 @@ use gpui_component::{h_flex, label::Label, ActiveTheme, IconName, Sizable};
 #[derive(Debug, Clone)]
 pub enum TerminalHeaderBarEvent {
     ToggleExpanded,
+    CloseSession,
 }
 
 impl EventEmitter<TerminalHeaderBarEvent> for TerminalHeaderBar {}
@@ -54,6 +55,15 @@ impl Render for TerminalHeaderBar {
                 cx.emit(TerminalHeaderBarEvent::ToggleExpanded);
             }));
 
+        let close_button = Button::new("close-session")
+            .icon(IconName::Close)
+            .ghost()
+            .small()
+            .tooltip("Close session")
+            .on_click(cx.listener(|_this, _, _window, cx| {
+                cx.emit(TerminalHeaderBarEvent::CloseSession);
+            }));
+
         h_flex()
             .id("terminal-header-bar")
             .w_full()
@@ -65,6 +75,6 @@ impl Render for TerminalHeaderBar {
             .border_color(cx.theme().border)
             .bg(cx.theme().title_bar)
             .child(Label::new(self.persona_name.clone()).text_sm())
-            .child(toggle_button)
+            .child(h_flex().gap_1().child(toggle_button).child(close_button))
     }
 }

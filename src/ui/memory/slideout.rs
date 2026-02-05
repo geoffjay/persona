@@ -161,7 +161,7 @@ impl Render for MemorySlideout {
         };
 
         v_flex()
-            .w(px(400.))
+            .w(px(600.))
             .h_full()
             .border_l_1()
             .border_color(cx.theme().border)

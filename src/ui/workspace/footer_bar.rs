@@ -4,8 +4,12 @@ use gpui_component::ActiveTheme;
 pub struct FooterBar;
 
 impl FooterBar {
-    pub fn new() -> Self {
+    pub fn new(_window: &mut Window, _cx: &mut Context<Self>) -> Self {
         Self
+    }
+
+    pub fn view(window: &mut Window, cx: &mut App) -> Entity<Self> {
+        cx.new(|cx| Self::new(window, cx))
     }
 }
 

@@ -14,6 +14,8 @@ use gpui_component::Root;
 use ui::{theme::apply_theme, window::get_window_options};
 
 fn main() {
+    env_logger::init();
+
     let app = Application::new()
         .with_assets(gpui_component_assets::Assets)
         .with_http_client(http::ReqwestHttpClient::new());

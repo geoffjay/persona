@@ -28,8 +28,8 @@ impl App {
 
         let view = cx.entity().clone();
 
-        let header_bar = cx.new(|_cx| HeaderBar::new());
-        let footer_bar = cx.new(|_cx| FooterBar::new());
+        let header_bar = cx.new(|_cx| HeaderBar::new(_window, _cx));
+        let footer_bar = cx.new(|_cx| FooterBar::new(_window, _cx));
 
         let nav_bar = cx.new(|_cx| {
             let view = view.clone();

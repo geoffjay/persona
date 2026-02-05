@@ -5,26 +5,28 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+core-text = "=21.0.0"
+dirs = "6.0"
+env_logger = "0.11"
+futures = "0.3"
 gpui = "0.2"
 gpui_http_client = "0.2"
-futures = "0.3"
 gpui-component = "0.5"
 gpui-component-assets = "0.5"
 # gpui-terminal = "0.1"
 # gpui-terminal = { path = "../gpui-terminal" }
 gpui-terminal = { git = "https://github.com/geoffjay/gpui-terminal", branch = "scroll" }
 gpui-tokio-bridge = "0.1"
-tokio = { version = "1", features = ["rt-multi-thread"] }
-core-text = "=21.0.0"
+log = "0.4"
+portable-pty = "0.9"
+reqwest = { version = "0.12", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_yaml = "0.9"
-toml = "0.8"
-dirs = "6.0"
-portable-pty = "0.9"
-reqwest = { version = "0.12", features = ["json"] }
 thiserror = "2.0"
-chrono = { version = "0.4", features = ["serde"] }
+tokio = { version = "1", features = ["rt-multi-thread"] }
+toml = "0.8"
 tracing = "0.1"
 
 [dev-dependencies]

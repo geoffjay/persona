@@ -15,16 +15,23 @@ pub struct ConversationView {
     pty_master: Option<Arc<Mutex<Box<dyn portable_pty::MasterPty + Send>>>>,
     error: Option<String>,
     needs_focus: bool,
+    continue_session: bool,
 }
 
 impl ConversationView {
-    pub fn new(persona: Persona, window: &mut Window, cx: &mut Context<Self>) -> Self {
+    pub fn new(
+        persona: Persona,
+        continue_session: bool,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Self {
         let mut view = Self {
             persona: persona.clone(),
             terminal: None,
             pty_master: None,
             error: None,
             needs_focus: true,
+            continue_session,
         };
 
         if let Err(e) = view.spawn_terminal(&persona, window, cx) {
@@ -71,7 +78,9 @@ impl ConversationView {
         let mut cmd = CommandBuilder::new("opencode");
         cmd.arg("--agent");
         cmd.arg(&persona.id);
-        cmd.arg("--continue");
+        if self.continue_session {
+            cmd.arg("--continue");
+        }
 
         // Set the working directory to where .opencode/opencode.jsonc lives
         // In dev mode: project root; in production: ~/Library/Application Support/persona

@@ -1,7 +1,6 @@
 mod conversation;
 mod list;
-mod tabs;
+mod panel;
+mod terminal_header_bar;
 
-pub use conversation::ConversationView;
-pub use list::PersonaList;
-pub use tabs::ConversationTabs;
+pub use panel::PersonaPanel;

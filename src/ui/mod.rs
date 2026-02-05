@@ -8,6 +8,6 @@ mod workspace;
 
 pub use memory::MemoryView;
 pub use navigation::NavigationBar;
-pub use persona::{ConversationTabs, ConversationView, PersonaList};
+pub use persona::PersonaPanel;
 pub use settings::SettingsView;
 pub use workspace::{FooterBar, HeaderBar};

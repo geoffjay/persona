@@ -11,6 +11,8 @@ use app::App;
 use config::{ensure_data_dir, AppConfig};
 use gpui::*;
 use gpui_component::Root;
+use std::cell::RefCell;
+use std::rc::Rc;
 use ui::{theme::apply_theme, window::get_window_options};
 
 fn main() {
@@ -38,9 +40,21 @@ fn main() {
 
         let config = AppConfig::load();
 
-        // Quit the application when the window is closed
-        cx.on_window_closed(|cx| {
-            cx.quit();
+        // Store the App entity so we can access it on window close
+        let app_entity: Rc<RefCell<Option<Entity<App>>>> = Rc::new(RefCell::new(None));
+
+        // Close all sessions and quit the application when the window is closed
+        cx.on_window_closed({
+            let app_entity = app_entity.clone();
+            move |cx| {
+                // Shutdown the app to close any open sessions
+                if let Some(app) = app_entity.borrow().clone() {
+                    app.update(cx, |app, app_cx| {
+                        app.shutdown(app_cx);
+                    });
+                }
+                cx.quit();
+            }
         })
         .detach();
 
@@ -49,6 +63,7 @@ fn main() {
             apply_theme(&config.general.theme, cx);
 
             let view = cx.new(|cx| App::new(config, window, cx));
+            *app_entity.borrow_mut() = Some(view.clone());
             cx.new(|cx| Root::new(view, window, cx))
         })
         .expect("Failed to open window");

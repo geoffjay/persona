@@ -13,6 +13,9 @@ pub struct ConversationView {
     terminal: Option<Entity<TerminalView>>,
     #[allow(dead_code)]
     pty_master: Option<Arc<Mutex<Box<dyn portable_pty::MasterPty + Send>>>>,
+    child: Option<Box<dyn portable_pty::Child + Send + Sync>>,
+    /// Store the process ID for killing the process group on cleanup
+    child_pid: Option<u32>,
     error: Option<String>,
     needs_focus: bool,
     continue_session: bool,
@@ -29,6 +32,8 @@ impl ConversationView {
             persona: persona.clone(),
             terminal: None,
             pty_master: None,
+            child: None,
+            child_pid: None,
             error: None,
             needs_focus: true,
             continue_session,
@@ -86,8 +91,10 @@ impl ConversationView {
         // In dev mode: project root; in production: ~/Library/Application Support/persona
         cmd.cwd(working_dir());
 
-        // Spawn the command in the PTY
-        pair.slave.spawn_command(cmd)?;
+        // Spawn the command in the PTY and store child handle for cleanup
+        let child = pair.slave.spawn_command(cmd)?;
+        self.child_pid = child.process_id();
+        self.child = Some(child);
 
         // Load terminal configuration from unified app config
         let app_config = AppConfig::load();
@@ -115,6 +122,41 @@ impl ConversationView {
 
         self.terminal = Some(terminal);
         Ok(())
+    }
+}
+
+impl Drop for ConversationView {
+    fn drop(&mut self) {
+        // Kill the process and its process group to ensure all child processes are terminated
+        if let Some(pid) = self.child_pid.take() {
+            let pid = pid as i32;
+            unsafe {
+                // Get the process group ID (may differ from PID)
+                let pgid = libc::getpgid(pid);
+
+                // Send SIGTERM to the process itself for graceful shutdown
+                libc::kill(pid, libc::SIGTERM);
+
+                // Also kill the process group if we got a valid PGID
+                if pgid > 0 {
+                    libc::killpg(pgid, libc::SIGTERM);
+                }
+
+                // Brief wait for graceful shutdown
+                std::thread::sleep(std::time::Duration::from_millis(50));
+
+                // Force kill the process and its group
+                libc::kill(pid, libc::SIGKILL);
+                if pgid > 0 {
+                    libc::killpg(pgid, libc::SIGKILL);
+                }
+            }
+        }
+
+        // Also try the portable_pty kill as a fallback
+        if let Some(mut child) = self.child.take() {
+            let _ = child.kill();
+        }
     }
 }
 

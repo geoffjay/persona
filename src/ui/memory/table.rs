@@ -2,34 +2,10 @@ use crate::memory::Memory;
 use gpui::*;
 use gpui_component::{h_flex, list::ListItem, v_flex, ActiveTheme};
 
-pub struct MemoryTable {
-    memories: Vec<Memory>,
-    selected_index: Option<usize>,
-    on_select: Box<dyn Fn(usize, &Memory, &mut Window, &mut App) + 'static>,
-}
+struct MemoryTableHeader;
 
-impl MemoryTable {
-    pub fn new<F>(memories: Vec<Memory>, on_select: F) -> Self
-    where
-        F: Fn(usize, &Memory, &mut Window, &mut App) + 'static,
-    {
-        Self {
-            memories,
-            selected_index: None,
-            on_select: Box::new(on_select),
-        }
-    }
-
-    pub fn set_memories(&mut self, memories: Vec<Memory>) {
-        self.memories = memories;
-        self.selected_index = None;
-    }
-
-    pub fn set_selected(&mut self, index: Option<usize>) {
-        self.selected_index = index;
-    }
-
-    fn render_header(&self, cx: &Context<Self>) -> impl IntoElement {
+impl MemoryTableHeader {
+    fn render(cx: &App) -> impl IntoElement {
         h_flex()
             .w_full()
             .px_3()
@@ -80,16 +56,20 @@ impl MemoryTable {
                     .child("Type"),
             )
     }
+}
 
-    fn render_row(
-        &self,
+struct MemoryTableRow;
+
+impl MemoryTableRow {
+    fn render(
         index: usize,
         memory: &Memory,
-        cx: &mut Context<Self>,
+        is_selected: bool,
+        entity: &Entity<MemoryTable>,
+        cx: &App,
     ) -> impl IntoElement {
-        let is_selected = self.selected_index == Some(index);
         let memory_clone = memory.clone();
-        let entity = cx.entity().clone();
+        let entity_clone = entity.clone();
 
         // Format date
         let created = memory.created_at.format("%Y-%m-%d %H:%M").to_string();
@@ -113,7 +93,7 @@ impl MemoryTable {
             .py_1()
             .selected(is_selected)
             .on_click(move |_, window, cx| {
-                entity.update(cx, |this, cx| {
+                entity_clone.update(cx, |this, cx| {
                     this.selected_index = Some(index);
                     (this.on_select)(index, &memory_clone, window, cx);
                     cx.notify();
@@ -172,13 +152,46 @@ impl MemoryTable {
     }
 }
 
+pub struct MemoryTable {
+    memories: Vec<Memory>,
+    selected_index: Option<usize>,
+    on_select: Box<dyn Fn(usize, &Memory, &mut Window, &mut App) + 'static>,
+}
+
+impl MemoryTable {
+    pub fn new<F>(memories: Vec<Memory>, on_select: F) -> Self
+    where
+        F: Fn(usize, &Memory, &mut Window, &mut App) + 'static,
+    {
+        Self {
+            memories,
+            selected_index: None,
+            on_select: Box::new(on_select),
+        }
+    }
+
+    pub fn set_memories(&mut self, memories: Vec<Memory>) {
+        self.memories = memories;
+        self.selected_index = None;
+    }
+
+    pub fn set_selected(&mut self, index: Option<usize>) {
+        self.selected_index = index;
+    }
+}
+
 impl Render for MemoryTable {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let entity = cx.entity().clone();
+
         let rows: Vec<_> = self
             .memories
             .iter()
             .enumerate()
-            .map(|(i, m)| self.render_row(i, m, cx))
+            .map(|(index, memory)| {
+                let is_selected = self.selected_index == Some(index);
+                MemoryTableRow::render(index, memory, is_selected, &entity, cx)
+            })
             .collect();
 
         v_flex()
@@ -186,7 +199,7 @@ impl Render for MemoryTable {
             .w_full()
             .flex_1()
             .overflow_hidden()
-            .child(self.render_header(cx))
+            .child(MemoryTableHeader::render(cx))
             .child(
                 v_flex()
                     .id("memory-table-rows")

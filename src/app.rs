@@ -75,6 +75,13 @@ impl App {
         });
     }
 
+    /// Shutdown the application by closing all open sessions
+    pub fn shutdown(&mut self, cx: &mut Context<Self>) {
+        self.persona_panel.update(cx, |panel, pcx| {
+            panel.close_all_sessions(pcx);
+        });
+    }
+
     fn render_main_content(
         &self,
         _window: &mut Window,

@@ -126,6 +126,15 @@ impl PersonaPanel {
         cx.notify();
     }
 
+    /// Close all active sessions. Called on application shutdown.
+    pub fn close_all_sessions(&mut self, cx: &mut Context<Self>) {
+        // Clear all sessions - this will drop the ConversationViews and trigger cleanup
+        self.sessions.clear();
+        self.is_expanded = false;
+        self.sync_active_sessions(cx);
+        cx.notify();
+    }
+
     fn sync_active_sessions(&self, cx: &mut Context<Self>) {
         let active_ids: std::collections::HashSet<String> =
             self.sessions.keys().cloned().collect();

@@ -25,6 +25,10 @@ impl TerminalHeaderBar {
     pub fn set_expanded(&mut self, is_expanded: bool) {
         self.is_expanded = is_expanded;
     }
+
+    pub fn is_expanded(&self) -> bool {
+        self.is_expanded
+    }
 }
 
 impl Render for TerminalHeaderBar {

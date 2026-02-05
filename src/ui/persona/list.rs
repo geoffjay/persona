@@ -1,12 +1,15 @@
 use crate::persona::Persona;
 use gpui::*;
 use gpui_component::avatar::Avatar;
+use gpui_component::badge::Badge;
 use gpui_component::list::ListItem;
 use gpui_component::{h_flex, label::Label, v_flex, ActiveTheme, Sizable};
+use std::collections::HashSet;
 
 pub struct PersonaList {
     pub personas: Vec<Persona>,
     pub selected_index: Option<usize>,
+    pub active_session_ids: HashSet<String>,
     pub on_select: Box<dyn Fn(&Persona, &mut Window, &mut Context<Self>) + 'static>,
 }
 
@@ -18,16 +21,32 @@ impl PersonaList {
         Self {
             personas,
             selected_index: None,
+            active_session_ids: HashSet::new(),
             on_select: Box::new(on_select),
         }
     }
 
-    fn render_avatar(&self, persona: &Persona) -> Avatar {
+    pub fn set_active_sessions(&mut self, ids: HashSet<String>) {
+        self.active_session_ids = ids;
+    }
+
+    fn render_avatar(&self, persona: &Persona, cx: &mut Context<Self>) -> impl IntoElement {
         let mut avatar = Avatar::new().name(persona.name.clone()).small();
         if let Some(url) = &persona.avatar_url {
             avatar = avatar.src(url.clone());
         }
-        avatar
+
+        let has_active_session = self.active_session_ids.contains(&persona.id);
+
+        if has_active_session {
+            Badge::new()
+                .dot()
+                .color(cx.theme().success)
+                .small()
+                .child(avatar)
+        } else {
+            Badge::new().child(avatar)
+        }
     }
 
     fn render_persona_item(
@@ -49,7 +68,7 @@ impl PersonaList {
                 h_flex()
                     .gap_2()
                     .items_center()
-                    .child(self.render_avatar(persona))
+                    .child(self.render_avatar(persona, cx))
                     .child(Label::new(persona.name.clone())),
             )
             .on_click(move |_, window, cx| {

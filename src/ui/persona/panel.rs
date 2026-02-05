@@ -6,14 +6,21 @@ use gpui::prelude::FluentBuilder;
 use gpui::*;
 use gpui_component::button::{Button, ButtonVariants};
 use gpui_component::{h_flex, label::Label, v_flex, ActiveTheme};
+use std::collections::HashMap;
+
+/// Stores a session's conversation view and header bar
+struct Session {
+    conversation: Entity<ConversationView>,
+    header: Entity<TerminalHeaderBar>,
+}
 
 pub struct PersonaPanel {
     #[allow(dead_code)]
     personas: Vec<Persona>,
     selected_persona: Option<Persona>,
     persona_list: Entity<PersonaList>,
-    conversation: Option<Entity<ConversationView>>,
-    terminal_header: Option<Entity<TerminalHeaderBar>>,
+    /// Active sessions keyed by persona ID
+    sessions: HashMap<String, Session>,
     is_expanded: bool,
     _subscriptions: Vec<Subscription>,
 }
@@ -26,12 +33,7 @@ impl PersonaPanel {
             let entity = entity.clone();
             PersonaList::new(personas.clone(), move |persona, _window, cx| {
                 entity.update(cx, |this, cx| {
-                    // Just select, don't start session
-                    this.selected_persona = Some(persona.clone());
-                    this.conversation = None;
-                    this.terminal_header = None;
-                    this.is_expanded = false;
-                    cx.notify();
+                    this.select_persona(persona.clone(), cx);
                 });
             })
         });
@@ -40,11 +42,25 @@ impl PersonaPanel {
             personas,
             selected_persona: None,
             persona_list,
-            conversation: None,
-            terminal_header: None,
+            sessions: HashMap::new(),
             is_expanded: false,
             _subscriptions: Vec::new(),
         }
+    }
+
+    fn select_persona(&mut self, persona: Persona, cx: &mut Context<Self>) {
+        self.selected_persona = Some(persona.clone());
+
+        // If this persona has an active session, restore the expanded state from the header
+        if let Some(session) = self.sessions.get(&persona.id) {
+            let is_expanded = session.header.read(cx).is_expanded();
+            self.is_expanded = is_expanded;
+        } else {
+            // No active session, collapse sidebar
+            self.is_expanded = false;
+        }
+
+        cx.notify();
     }
 
     fn start_session(
@@ -55,19 +71,21 @@ impl PersonaPanel {
         cx: &mut Context<Self>,
     ) {
         let persona_clone = persona.clone();
-        let conv = cx.new(|cx| ConversationView::new(persona_clone.clone(), continue_session, window, cx));
-        self.conversation = Some(conv);
+        let conv =
+            cx.new(|cx| ConversationView::new(persona_clone.clone(), continue_session, window, cx));
 
         // Create terminal header bar
-        let header = cx.new(|_cx| TerminalHeaderBar::new(persona_clone.name.clone(), self.is_expanded));
+        let header =
+            cx.new(|_cx| TerminalHeaderBar::new(persona_clone.name.clone(), self.is_expanded));
 
         // Subscribe to header bar events
-        let subscription = cx.subscribe(&header, |this, _header, event, cx| match event {
+        let persona_id = persona.id.clone();
+        let subscription = cx.subscribe(&header, move |this, _header, event, cx| match event {
             TerminalHeaderBarEvent::ToggleExpanded => {
                 this.is_expanded = !this.is_expanded;
-                // Update the header bar's expanded state
-                if let Some(header) = &this.terminal_header {
-                    header.update(cx, |h, hcx| {
+                // Update the header bar's expanded state for this session
+                if let Some(session) = this.sessions.get(&persona_id) {
+                    session.header.update(cx, |h, hcx| {
                         h.set_expanded(this.is_expanded);
                         hcx.notify();
                     });
@@ -77,9 +95,30 @@ impl PersonaPanel {
         });
 
         self._subscriptions.push(subscription);
-        self.terminal_header = Some(header);
+
+        // Store the session
+        let session = Session {
+            conversation: conv,
+            header,
+        };
+        self.sessions.insert(persona.id.clone(), session);
+
+        // Update the persona list to show active sessions
+        self.sync_active_sessions(cx);
 
         cx.notify();
+    }
+
+    fn sync_active_sessions(&self, cx: &mut Context<Self>) {
+        let active_ids: std::collections::HashSet<String> =
+            self.sessions.keys().cloned().collect();
+        let persona_list = self.persona_list.clone();
+        cx.defer(move |cx| {
+            persona_list.update(cx, |list, lcx| {
+                list.set_active_sessions(active_ids);
+                lcx.notify();
+            });
+        });
     }
 
     fn render_session_buttons(&self, cx: &mut Context<Self>) -> impl IntoElement {
@@ -138,26 +177,22 @@ impl PersonaPanel {
     }
 
     fn render_conversation_area(&self, cx: &mut Context<Self>) -> AnyElement {
-        if self.selected_persona.is_none() {
+        let Some(persona) = &self.selected_persona else {
             return self.render_empty_state(cx).into_any_element();
-        }
+        };
 
-        if self.conversation.is_none() {
+        // Check if this persona has an active session
+        let Some(session) = self.sessions.get(&persona.id) else {
             return self.render_session_buttons(cx).into_any_element();
-        }
+        };
 
         // Active session - show header bar + conversation
-        let mut content = v_flex().flex_1().size_full();
-
-        if let Some(header) = &self.terminal_header {
-            content = content.child(header.clone());
-        }
-
-        if let Some(conv) = &self.conversation {
-            content = content.child(conv.clone());
-        }
-
-        content.into_any_element()
+        v_flex()
+            .flex_1()
+            .size_full()
+            .child(session.header.clone())
+            .child(session.conversation.clone())
+            .into_any_element()
     }
 }
 
